@@ -48,6 +48,17 @@ class MdAbsenHadirController extends AdminBaseController
 
     public function datahadir()
     {
+                    
+       
+
+
+
+
+
+
+
+
+
         $DepartmentAllModel = new DepartmentAll();
         $this->department =  $DepartmentAllModel->getAllDepartment();
 
@@ -628,7 +639,8 @@ class MdAbsenHadirController extends AdminBaseController
                     enroll_id,
                     substr(absen_masuk_kerja, 1, 5) absen_in,
                     substr(absen_pulang_kerja, 1, 5) absen_out,
-                    status_absen
+                    status_absen,
+                    operator 
                 ")
                 ->whereRaw("
                     tanggal_berjalan = '" . $tanggal_mesin_absensi . "'
@@ -636,8 +648,23 @@ class MdAbsenHadirController extends AdminBaseController
                 ")
                 ->get();
 
+                // foreach($kehadiran as $val) {
+                //     if(!$val["absen_out"]) {
+                //         if($val["status_absen"] == "TL" || $val["status_absen"] == "M" || $val["status_absen"] == "IKS" || $val["status_absen"] == "" || !$val["status_absen"]) {
+                //             MasterDataAbsenKehadiran::where('tanggal_berjalan','=', $tanggal_mesin_absensi)
+                //             ->where('enroll_id','=', $val["enroll_id"])
+                //             ->update([
+                //                 'absen_masuk_kerja' => $value->absen_in,
+                //                 'absen_pulang_kerja' => $value->absen_out,
+                //                 'status_absen' => $value->status_absen
+                //             ]);
+                //         }
+                //     }
+                // }
+
+                //Andri
                 foreach($kehadiran as $val) {
-                    if(!$val["absen_out"]) {
+                    if((!$val["absen_out"]) || ($val["operator"]=='system')) {
                         if($val["status_absen"] == "TL" || $val["status_absen"] == "M" || $val["status_absen"] == "IKS" || $val["status_absen"] == "" || !$val["status_absen"]) {
                             MasterDataAbsenKehadiran::where('tanggal_berjalan','=', $tanggal_mesin_absensi)
                             ->where('enroll_id','=', $val["enroll_id"])
@@ -650,7 +677,46 @@ class MdAbsenHadirController extends AdminBaseController
                     }
                 }
             }
+            $masterAbsen=MasterDataAbsenKehadiran::where('tanggal_berjalan',$tanggal_mesin_absensi)
+                ->where('jumlah_menit_absen_dtpc','>',0)->get();
 
+            foreach ($masterAbsen as $k => $v) {
+                $jadwal_in=$v->mulai_jam_kerja;
+                $jadwal_out=$v->akhir_jam_kerja;
+
+                $absen_in=$v->absen_masuk_kerja;
+                $absen_out=$v->absen_pulang_kerja;
+
+                $durasi_kerja=date_diff(date_create($jadwal_in),date_create($jadwal_out));
+                $durasi_kerja_menit=$durasi_kerja->i +($durasi_kerja->h*60);
+               
+                $DT = date_diff(date_create($jadwal_in),date_create($absen_in));
+                $PC = date_diff(date_create($jadwal_out),date_create($absen_out));
+                if( $absen_in>$jadwal_in){
+                    $total_DT = $DT->i +($DT->h*60);
+                }else{
+                    $total_DT=0;
+                }
+        
+                if( $absen_out<$jadwal_out){
+                    $total_PC = $PC->i +($PC->h*60);
+                }else{
+                    $total_PC=0;
+                }
+
+                $jumlah_menit_absen_dtpc=$total_DT+$total_PC;
+                $data_update=[
+                    'nik'=>$v->nik,
+                    'jumlah_menit_absen_dtpc'=>$jumlah_menit_absen_dtpc,
+                    'jumlah_absen_menit_kerja'=>$durasi_kerja_menit-$jumlah_menit_absen_dtpc,
+                    'jumlah_menit_absen_dt'=>$total_DT,
+                    'jumlah_menit_absen_pc'=>$total_PC,
+                ];
+                MasterDataAbsenKehadiran::where('tanggal_berjalan', $tanggal_mesin_absensi)
+                            ->where('enroll_id', $val->enroll_id)->update($data_update);
+
+            }
+            // end andri
             $setClearMTL = MasterDataAbsenKehadiran::selectRaw("
                 substr(tanggal_berjalan,1, 10) tanggal_absen,
                 enroll_id,
