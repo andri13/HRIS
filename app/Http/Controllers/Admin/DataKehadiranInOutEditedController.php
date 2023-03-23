@@ -498,16 +498,58 @@ class DataKehadiranInOutEditedController extends AdminBaseController
             'tanggal_resign' => $tanggal_resign,
             'operator' => $operator
         ]);
-
         if($query) {
-            $query = MasterDataAbsenKehadiran::where('tanggal_berjalan','=', $tanggal_berjalan)
-            ->where('enroll_id','=', $enroll_id)
-            ->update([
+            // $query = MasterDataAbsenKehadiran::where('tanggal_berjalan','=', $tanggal_berjalan)
+            // ->where('enroll_id','=', $enroll_id)
+            // ->update([
+            //     'absen_masuk_kerja' => $absen_masuk_kerja,
+            //     'absen_pulang_kerja' => $absen_pulang_kerja,
+            //     'status_absen' => $status_absen,
+            //     'operator' => $operator
+            // ]);
+            
+            //andri
+            $query=MasterDataAbsenKehadiran::where('tanggal_berjalan',$tanggal_berjalan)
+                ->where('enroll_id','=', $enroll_id)->first();
+
+                $jadwal_in=$query->mulai_jam_kerja;
+                $jadwal_out=$query->akhir_jam_kerja;
+
+                $absen_in=$absen_masuk_kerja;
+                $absen_out=$absen_pulang_kerja;
+
+                $durasi_kerja=date_diff(date_create($jadwal_in),date_create($jadwal_out));
+                $durasi_kerja_menit=$durasi_kerja->i +($durasi_kerja->h*60);
+            
+                $DT = date_diff(date_create($jadwal_in),date_create($absen_in));
+                $PC = date_diff(date_create($jadwal_out),date_create($absen_out));
+                if( $absen_in>$jadwal_in){
+                    $total_DT = $DT->i +($DT->h*60);
+                }else{
+                    $total_DT=0;
+                }
+        
+                if( $absen_out<$jadwal_out){
+                    $total_PC = $PC->i +($PC->h*60);
+                }else{
+                    $total_PC=0;
+                }
+
+            $jumlah_menit_absen_dtpc=$total_DT+$total_PC;
+            $data_update=[
+                'jumlah_menit_absen_dtpc'=>$jumlah_menit_absen_dtpc,
+                'jumlah_absen_menit_kerja'=>$durasi_kerja_menit-$jumlah_menit_absen_dtpc,
+                'jumlah_menit_absen_dt'=>$total_DT,
+                'jumlah_menit_absen_pc'=>$total_PC,
                 'absen_masuk_kerja' => $absen_masuk_kerja,
                 'absen_pulang_kerja' => $absen_pulang_kerja,
                 'status_absen' => $status_absen,
                 'operator' => $operator
-            ]);
+            ];
+            MasterDataAbsenKehadiran::where('tanggal_berjalan', $tanggal_berjalan)
+                ->where('enroll_id',  $enroll_id)->update($data_update);
+
+            //end andri
         } else {
             $query = false;
         }

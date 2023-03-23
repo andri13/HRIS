@@ -706,7 +706,6 @@ class MdAbsenHadirController extends AdminBaseController
 
                 $jumlah_menit_absen_dtpc=$total_DT+$total_PC;
                 $data_update=[
-                    'nik'=>$v->nik,
                     'jumlah_menit_absen_dtpc'=>$jumlah_menit_absen_dtpc,
                     'jumlah_absen_menit_kerja'=>$durasi_kerja_menit-$jumlah_menit_absen_dtpc,
                     'jumlah_menit_absen_dt'=>$total_DT,
