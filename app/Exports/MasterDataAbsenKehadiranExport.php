@@ -136,7 +136,6 @@ class MasterDataAbsenKehadiranExport implements FromQuery, WithMapping, ShouldAu
                 ->whereRaw('
                     substr(master_data_absen_kehadiran.tanggal_berjalan, 1, 10) between "' . $tanggalMulai . '" and "' . $tanggalSampai . '" 
                     ' . $this->filterStaff . ' ' . $this->inDepartment . ' ' . $this->inBagian . ' ' . $this->inSearchData . '
-                   and (master_data_absen_kehadiran.status_absen != "R" OR master_data_absen_kehadiran.status_absen IS NULL)
                 ')
                 ->leftJoin('employee_atribut','master_data_absen_kehadiran.enroll_id','=','employee_atribut.enroll_id')
                 ->leftJoin('department_all','employee_atribut.sub_dept_id','=','department_all.sub_dept_id')
