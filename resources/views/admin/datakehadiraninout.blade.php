@@ -870,14 +870,14 @@
             $("#absen_masuk_kerja").removeClass("is-invalid state-invalid");
             $("#absen_pulang_kerja").removeClass("is-invalid state-invalid");
 
-            if(!absen_masuk_kerja) {
+           if(!absen_masuk_kerja && absen_pulang_kerja) {
                 $("#absen_masuk_kerja").addClass("is-invalid state-invalid");
                 notif({
                     msg: "<b>Warning:</b> Silakan di isi Absen OUT nya.",
                     type: "warning"
                 });
                 return false;
-            } else if(!absen_pulang_kerja) {
+            } else if(!absen_pulang_kerja && absen_masuk_kerja) {
                 $("#absen_pulang_kerja").addClass("is-invalid state-invalid");
                 notif({
                     msg: "<b>Warning:</b> Silakan di isi Absen OUT nya.",

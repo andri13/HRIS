@@ -523,22 +523,27 @@ class DataKehadiranInOutEditedController extends AdminBaseController
             
                 $DT = date_diff(date_create($jadwal_in),date_create($absen_in));
                 $PC = date_diff(date_create($jadwal_out),date_create($absen_out));
-                if( $absen_in>$jadwal_in){
+                if( $absen_in!=null && $absen_in>$jadwal_in ){
                     $total_DT = $DT->i +($DT->h*60);
                 }else{
                     $total_DT=0;
                 }
-        
-                if( $absen_out<$jadwal_out){
+                if( $absen_out !=null && $absen_out<$jadwal_out){
                     $total_PC = $PC->i +($PC->h*60);
                 }else{
                     $total_PC=0;
                 }
 
-            $jumlah_menit_absen_dtpc=$total_DT+$total_PC;
+                $jumlah_menit_absen_dtpc=$total_DT+$total_PC;
+                if( $absen_in!=null && $absen_out !=null){
+                    $jumlah_absen_menit_kerja=$durasi_kerja_menit-$jumlah_menit_absen_dtpc;
+                }
+                else{
+                    $jumlah_absen_menit_kerja=0;
+                }
             $data_update=[
                 'jumlah_menit_absen_dtpc'=>$jumlah_menit_absen_dtpc,
-                'jumlah_absen_menit_kerja'=>$durasi_kerja_menit-$jumlah_menit_absen_dtpc,
+                'jumlah_absen_menit_kerja'=>$jumlah_absen_menit_kerja,
                 'jumlah_menit_absen_dt'=>$total_DT,
                 'jumlah_menit_absen_pc'=>$total_PC,
                 'absen_masuk_kerja' => $absen_masuk_kerja,
