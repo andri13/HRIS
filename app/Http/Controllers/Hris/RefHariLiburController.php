@@ -100,7 +100,7 @@ class RefHariLiburController extends AdminBaseController
             {
                 $nestedData['id'] = $q->id;
                 $nestedData['nama_hari_libur'] = $q->nama_hari_libur;
-                $nestedData['tanggal_libur'] = $q->tanggal_libur;
+                $nestedData['tanggal_libur'] = $q->tanggal_libur!=null?date('d-m-Y', strtotime($q->tanggal_libur)):$q->tanggal_libur;
                 $nestedData['status_absen'] = $q->status_absen;
                 $nestedData['created_at'] = substr($q->created_at, 0, 10) . " " . substr($q->created_at, 11, 5);
                 $nestedData['updated_at'] = substr($q->updated_at, 0, 10) . " " . substr($q->updated_at, 11, 5);

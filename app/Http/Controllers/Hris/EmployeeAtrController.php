@@ -873,7 +873,7 @@ class EmployeeAtrController extends AdminBaseController
                             $tgl_ks = ($tgl_ks - 25569) * 86400;
                             $tgl_ks = 25569 + ($tgl_ks / 86400);
                             $tgl_ks = ($tgl_ks - 25569) * 86400;
-                            $tgl_kep_tk=date('Y-m-d', $tgl_ks);
+                            $tgl_kep_ks=date('Y-m-d', $tgl_ks);
                         }
                         else{
                             $tgl_kep_ks=null;
