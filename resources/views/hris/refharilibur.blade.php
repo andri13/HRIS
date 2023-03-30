@@ -111,7 +111,7 @@
                     <table class="table table-striped table-sm mb-0">
                         <tr>
                             <th class="w-35">ID</th>
-                            <td class="w-65"><input readonly type="text" class="form-control" id="id" name="id"></td>
+                            <td class="w-65"><input type="text" class="form-control" id="id" name="id"></td>
                         </tr>
                         <tr>
                             <th class="w-35">Nama Hari Libur</th>
@@ -132,7 +132,15 @@
                         </tr>
                         <tr>
                             <th class="w-35">Status Absen</th>
-                            <td class="w-65"><input type="text" class="form-control" id="status_absen" name="status_absen"></td>
+                            <td>
+                                <select class="form-control " id="status_absen" name="status_absen">
+                                    <option value="">Status Absen</option>
+                                    @foreach($RefAbsenIjin as $key => $value)
+                                        <option name="status_absen" value="{{$value->kode_absen_ijin}}">{{$value->kode_absen_ijin}}  {{$value->nama_absen_ijin}}</option>    
+                                    @endforeach
+                                </select>
+                            </td> 
+                            <!-- <td class="w-65"><input type="text" class="form-control" id="status_absen" name="status_absen"></td> -->
                         </tr>
                     </table>                                                    
                     {{-- </form> --}}
@@ -219,6 +227,7 @@
             var id = $("#id").val();
             
             $("#form1 :input").prop("disabled", false);
+            $("#id").prop("disabled", true);
             $("#btn-save").prop("disabled", false);
             $("#btn-cancel").prop("disabled", false);
             $("#form1").trigger('reset');
@@ -232,6 +241,8 @@
             
             if (id.length > 0) {
                 $("#form1 :input").prop("disabled", false);
+                $("#id").prop("disabled", true);
+                $("#tanggal_libur").prop("disabled", true);
                 $("#btn-save").prop("disabled", false);
                 $("#btn-cancel").prop("disabled", false);
             } else {
@@ -250,6 +261,8 @@
             var nama_hari_libur = $("#nama_hari_libur").val();
             var tanggal_libur = $("#tanggal_libur").val();
             var status_absen = $("#status_absen").val();
+            var id = $("#id").val();
+
 
             $('#btn-save').addClass("btn-loading");
             $("#btn-save").html('Please wait...');
@@ -267,6 +280,8 @@
                     nama_hari_libur:nama_hari_libur,
                     tanggal_libur:tanggal_libur,
                     status_absen:status_absen,
+                    id:id,
+
                 },
                 dataType: 'json',
                 success: function(res){

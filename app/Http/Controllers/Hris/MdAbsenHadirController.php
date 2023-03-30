@@ -47,18 +47,7 @@ class MdAbsenHadirController extends AdminBaseController
     }
 
     public function datahadir()
-    {
-                    
-       
-
-
-
-
-
-
-
-
-
+    {               
         $DepartmentAllModel = new DepartmentAll();
         $this->department =  $DepartmentAllModel->getAllDepartment();
 
@@ -292,6 +281,10 @@ class MdAbsenHadirController extends AdminBaseController
                     $tanggal_absen = $q->tanggal_absen;
                     $kode_hari = $q->kode_hari;
                     $liburnasional = $q->holiday_name;
+                    $status_absen=$q->status_absen;
+                    $absen_pulang_kerja=$q->absen_pulang_kerja;
+                    $absen_masuk_kerja=$q->absen_masuk_kerja;
+
                     $kerjalibur = "KERJA";
                     if($tanggal_absen <> "") {
                         $kerjalibur = "KERJA";
@@ -327,7 +320,9 @@ class MdAbsenHadirController extends AdminBaseController
                     if($liburnasional <> "") {
                         $kerjalibur = "LIBUR";
                     }
-
+                    if(($status_absen == "LN" || $status_absen == "LP" ) &&($absen_pulang_kerja==null) && ($absen_masuk_kerja==null) ) {
+                        $kerjalibur = "LIBUR";
+                    }
                     $nestedData['uuid'] = $q->uuid;
                     $nestedData['employee_id'] = $q->employee_id;
                     $nestedData['nik'] = $q->nik;
@@ -632,7 +627,6 @@ class MdAbsenHadirController extends AdminBaseController
                     CONVERT ( VARCHAR ( 10 ), a.CHECKTIME, 126 ),
                     b.Badgenumber
             ") );
-
             foreach($checkinout as $value) {
                 $kehadiran = MasterDataAbsenKehadiran::selectRaw("
                     substr(tanggal_berjalan,1, 10) tanggal_absen,
@@ -665,56 +659,69 @@ class MdAbsenHadirController extends AdminBaseController
                 //Andri
                 foreach($kehadiran as $val) {
                     if((!$val["absen_out"]) || ($val["operator"]=='system')) {
-                        if($val["status_absen"] == "TL" || $val["status_absen"] == "M" || $val["status_absen"] == "IKS" || $val["status_absen"] == "" || !$val["status_absen"]) {
+                        if($val["status_absen"] == "TL" || $val["status_absen"] == "M" || $val["status_absen"] == "IKS" || $val["status_absen"] == "" || !$val["status_absen"]|| $val["status_absen"] == "LN" || $val["status_absen"] == "LP") {
+                            if($val["status_absen"] == "LN"){
+                                $status_absen='LN';
+                            }
+                            else{
+                                $status_absen=$value->status_absen;
+                            }
                             MasterDataAbsenKehadiran::where('tanggal_berjalan','=', $tanggal_mesin_absensi)
                             ->where('enroll_id','=', $val["enroll_id"])
                             ->update([
                                 'absen_masuk_kerja' => $value->absen_in,
                                 'absen_pulang_kerja' => $value->absen_out,
-                                'status_absen' => $value->status_absen
+                                'status_absen' => $status_absen
                             ]);
                         }
                     }
                 }
             }
-            $masterAbsen=MasterDataAbsenKehadiran::where('tanggal_berjalan',$tanggal_mesin_absensi)
-                ->where('jumlah_menit_absen_dtpc','>',0)->get();
+            // untuk hitung dt pc kondisi
+            $masterAbsen=MasterDataAbsenKehadiran::where('tanggal_berjalan',$tanggal_mesin_absensi)->get();
 
-            foreach ($masterAbsen as $k => $v) {
-                $jadwal_in=$v->mulai_jam_kerja;
-                $jadwal_out=$v->akhir_jam_kerja;
+                foreach ($masterAbsen as $k => $v) {
+                    $jadwal_in=$v->mulai_jam_kerja;
+                    $jadwal_out=$v->akhir_jam_kerja;
 
-                $absen_in=$v->absen_masuk_kerja;
-                $absen_out=$v->absen_pulang_kerja;
+                    $absen_in=$v->absen_masuk_kerja;
+                    $absen_out=$v->absen_pulang_kerja;
 
-                $durasi_kerja=date_diff(date_create($jadwal_in),date_create($jadwal_out));
-                $durasi_kerja_menit=$durasi_kerja->i +($durasi_kerja->h*60);
-               
-                $DT = date_diff(date_create($jadwal_in),date_create($absen_in));
-                $PC = date_diff(date_create($jadwal_out),date_create($absen_out));
-                if( $absen_in>$jadwal_in){
-                    $total_DT = $DT->i +($DT->h*60);
-                }else{
-                    $total_DT=0;
+                    $durasi_kerja=date_diff(date_create($jadwal_in),date_create($jadwal_out));
+                    $durasi_kerja_menit=$durasi_kerja->i +($durasi_kerja->h*60);
+                
+                    $DT = date_diff(date_create($jadwal_in),date_create($absen_in));
+                    $PC = date_diff(date_create($jadwal_out),date_create($absen_out));
+                    if( $absen_in!=null && $absen_in>$jadwal_in ){
+                        $total_DT = $DT->i +($DT->h*60);
+                    }else{
+                        $total_DT=0;
+                    }
+                    if( $absen_out !=null && $absen_out<$jadwal_out){
+                        $total_PC = $PC->i +($PC->h*60);
+                    }else{
+                        $total_PC=0;
+                    }
+    
+                    $jumlah_menit_absen_dtpc=$total_DT+$total_PC;
+                    if( $absen_in!=null && $absen_out !=null){
+                        $jumlah_absen_menit_kerja=$durasi_kerja_menit-$jumlah_menit_absen_dtpc;
+                    }
+                    else{
+                        $jumlah_absen_menit_kerja=0;
+                    }
+
+                    $jumlah_menit_absen_dtpc=$total_DT+$total_PC;
+                    $data_update=[
+                        'jumlah_menit_absen_dtpc'=>$jumlah_menit_absen_dtpc,
+                        'jumlah_absen_menit_kerja'=>$durasi_kerja_menit-$jumlah_menit_absen_dtpc,
+                        'jumlah_menit_absen_dt'=>$total_DT,
+                        'jumlah_menit_absen_pc'=>$total_PC,
+                    ];
+                    MasterDataAbsenKehadiran::where('tanggal_berjalan', $tanggal_mesin_absensi)
+                                ->where('enroll_id', $v->enroll_id)->update($data_update);
+
                 }
-        
-                if( $absen_out<$jadwal_out){
-                    $total_PC = $PC->i +($PC->h*60);
-                }else{
-                    $total_PC=0;
-                }
-
-                $jumlah_menit_absen_dtpc=$total_DT+$total_PC;
-                $data_update=[
-                    'jumlah_menit_absen_dtpc'=>$jumlah_menit_absen_dtpc,
-                    'jumlah_absen_menit_kerja'=>$durasi_kerja_menit-$jumlah_menit_absen_dtpc,
-                    'jumlah_menit_absen_dt'=>$total_DT,
-                    'jumlah_menit_absen_pc'=>$total_PC,
-                ];
-                MasterDataAbsenKehadiran::where('tanggal_berjalan', $tanggal_mesin_absensi)
-                            ->where('enroll_id', $val->enroll_id)->update($data_update);
-
-            }
             // end andri
             $setClearMTL = MasterDataAbsenKehadiran::selectRaw("
                 substr(tanggal_berjalan,1, 10) tanggal_absen,

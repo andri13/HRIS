@@ -17,6 +17,11 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Reader\Exception;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use App\Models\MasterDataAbsenKehadiran;
+use App\Models\RefAbsenIjin;
+use App\Models\DataAbsenPerijinan;
+
+
 
 /**
  * Class RefHariLiburController
@@ -34,6 +39,7 @@ class RefHariLiburController extends AdminBaseController
 
     public function index()
     {
+        $this->RefAbsenIjin= RefAbsenIjin::all();
         return View::make('hris/refharilibur', $this->data);
     }
 
@@ -123,6 +129,26 @@ class RefHariLiburController extends AdminBaseController
         $status_absen = $request->status_absen;
 
         $findDT = RefHariLibur::where('id','=', $id)->count();
+        $update_libur=[
+            'status_absen'=>$status_absen
+        ];
+        if($status_absen=='LP'){
+            MasterDataAbsenKehadiran::where('tanggal_berjalan',$tanggal_libur)
+            ->whereNotIn('status_absen',['DL','KM','R'])
+            ->where('absen_masuk_kerja',null)
+            ->where('absen_pulang_kerja',null)
+            ->update($update_libur);
+        }
+        elseif ($status_absen=='LN'){
+            MasterDataAbsenKehadiran::where('tanggal_berjalan',$tanggal_libur)
+            ->where(function ($query) {
+                $query ->whereNotIn('status_absen',['DL','R'])
+                        ->orWhere('status_absen',null);
+            })
+        //     // ->where('absen_masuk_kerja',null)
+        //     // ->where('absen_pulang_kerja',null)
+            ->update($update_libur);
+        }
 
         if($findDT > 0) {
             $query = RefHariLibur::where('id','=', $id)
@@ -146,9 +172,34 @@ class RefHariLiburController extends AdminBaseController
     {
         $id = $request->id;
 
-        $findDT = RefHariLibur::where('id','=', $id)->count();
+        $findDT = RefHariLibur::where('id','=', $id)->first();
 
-        if($findDT > 0) {
+        if($findDT) {
+            $update_libur=[
+                'status_absen'=>'M'
+            ];
+            MasterDataAbsenKehadiran::where('tanggal_berjalan',$findDT->tanggal_libur)
+                ->where('status_absen',$findDT->status_absen)
+                ->where('absen_masuk_kerja',null)
+                ->where('absen_pulang_kerja',null)
+                ->where('nomor_absen_ijin',null)
+                ->update($update_libur);
+
+
+            $absen_izin=MasterDataAbsenKehadiran::where('tanggal_berjalan',$findDT->tanggal_libur)
+                ->where('status_absen',$findDT->status_absen)
+                ->where('absen_masuk_kerja',null)
+                ->where('absen_pulang_kerja',null)
+                // ->where('nomor_absen_ijin','!=',null)
+                ->get();
+
+                foreach ($absen_izin as $key => $value) {
+                    $izin=DataAbsenPerijinan::where('nomor_form_perizinan',$value->nomor_absen_ijin)->where('enroll_id',$value->enroll_id)->first();
+                    $update_izin=[
+                        'status_absen'=>$izin->kode_absen_ijin??'M'
+                    ];
+                    MasterDataAbsenKehadiran::where('uuid',$value->uuid)->update($update_izin);
+                }
             $query = RefHariLibur::where('id','=',$id)->delete();
         } else {
             $query = false;

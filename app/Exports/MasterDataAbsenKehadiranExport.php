@@ -169,6 +169,8 @@ class MasterDataAbsenKehadiranExport implements FromQuery, WithMapping, ShouldAu
         $absenIN = $Kehadiran->absen_masuk_kerja;
         $absenOUT = $Kehadiran->absen_pulang_kerja;
 
+        $status_absen=$Kehadiran->status_absen;
+
         // Creating DateTime objects
         $dateTimeObject1 = date_create($mulai_jam_kerja); 
         $dateTimeObject2 = date_create($akhir_jam_kerja); 
@@ -211,6 +213,9 @@ class MasterDataAbsenKehadiranExport implements FromQuery, WithMapping, ShouldAu
                     $jumlah_menit_istirahat = 30;
                     break;
             }
+        }
+        if(($status_absen == "LN" || $status_absen == "LP" ) && ($absenIN==null) && ($absenOUT==null) ) {
+            $kerjalibur = "LIBUR";
         }
 
         if($liburnasional <> "") {
