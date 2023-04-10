@@ -34,7 +34,7 @@ use Illuminate\Support\Facades\DB;
 
 use Auth;
 
-class MasterDataAbsenKehadiranExport implements FromQuery, WithMapping, ShouldAutoSize, WithEvents, WithCustomStartCell, WithTitle, WithChunkReading, ShouldQueue
+class MasterDataAbsenKehadiranExport implements FromQuery, WithMapping, ShouldAutoSize, WithEvents, WithCustomStartCell, WithTitle, WithChunkReading, ShouldQueue, WithColumnFormatting
 {
     use Exportable;
 
@@ -328,8 +328,10 @@ class MasterDataAbsenKehadiranExport implements FromQuery, WithMapping, ShouldAu
             $total_lembur_1234 = $Kehadiran->total_lembur_1234;
         }
 
+        // $time =  $mulai_jam_kerja;
+        // $formattedTime = Carbon::createFromFormat('H:i:s', $time)->format('H:i:s');
         return [
-            $Kehadiran->tanggal_berjalan,
+            Date::stringToExcel($Kehadiran->tanggal_berjalan),
             $Kehadiran->nama_hari,
             $Kehadiran->nik,
             $Kehadiran->enroll_id,
@@ -338,6 +340,8 @@ class MasterDataAbsenKehadiranExport implements FromQuery, WithMapping, ShouldAu
             $Kehadiran->department_name,
             $kerjalibur,
             $mulai_jam_kerja,
+            // Date::stringToExcel($mulai_jam_kerja),
+            // Date::dateTimeToExcel(Carbon::parse($mulai_jam_kerja)),
             $akhir_jam_kerja,
             $jumlah_menit_istirahat,
             $jumlah_menit_kerja,
@@ -371,6 +375,13 @@ class MasterDataAbsenKehadiranExport implements FromQuery, WithMapping, ShouldAu
     public function title(): string
     {
         return $this->daterange1[0] . ' s/d ' . $this->daterange1[1];
+    }
+    public function columnFormats(): array
+    {
+        return [
+            'A' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            // 'I' => NumberFormat:: FORMAT_DATE_TIME2
+        ];
     }
 
     public function registerEvents() : array

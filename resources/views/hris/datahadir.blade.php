@@ -65,7 +65,89 @@
 
     <!-- row -->
     <div class="row">
-        <div class="col-md-8">
+
+        <div class="col-md-6">
+            <div class="card shadow card-collapsed">
+                <div class="card-header text-white bg-gradient-primary p-2">
+                    <div class="card-title">MESIN ABSENSI</div>
+                    <div class="card-options ">
+                        <a href="#" class="card-options-collapse mr-2" data-toggle="card-collapse"><i class="fe fe-chevron-up text-white"></i></a>
+                    </div>
+                </div>
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label class="form-label">TANGGAL ABSENSI : </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">
+                                            <i class="fa fa-calendar tx-16 lh-0 op-6"></i>
+                                        </div>
+                                    </div>
+                                    <input readonly id="tanggal_mesin_absensi" class="form-control fc-datepicker" placeholder="DD-MM-YYYY" type="text">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-light m-0 p-1">
+                    <div class="text-white">
+                        <a id="btn-updateKehadiran" class="btn btn-app btn-primary mr-0 mt-0 mb-0 text-white"><span><i class="fa fa-download"></i></span> UPDATE ABSENSI</a>
+                    </div>
+                </div>
+            </div>
+        </div><!-- col end -->
+ 
+        <div class="col-md-6">
+            <div class="card shadow card-collapsed">
+                <div class="card-header text-white bg-gradient-primary p-2">
+                    <div class="card-title">MESIN ABSENSI LINTAS HARI</div>
+                    <div class="card-options ">
+                        <a href="#" class="card-options-collapse mr-2" data-toggle="card-collapse"><i class="fe fe-chevron-up text-white"></i></a>
+                    </div>
+                </div>
+                <form id="form_update_lintashari" method="post">
+                        @csrf
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="form-label">TANGGAL ABSENSI  : </label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
+                                                <i class="fa fa-calendar tx-16 lh-0 op-6"></i>
+                                            </div>
+                                        </div>
+                                        <input id="" name="periode_absen" type="text" class="form-control data_range" required></input>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">PILIH KARYAWAN  : </label>
+                                <div class="form-group">
+                                    <span class="input-group">
+                                        <select id="selectEmployeeID" name="selectEmployeeID[]" multiple data-placeholder="Pilih karyawan" class="form-control select2 EmployeeID" style="width: 699.238px;" required>
+                                            @foreach ($selectemployee as $r_empl)
+                                                <option value="{{$r_empl->enroll_id}}">{{$r_empl->select_employee}}</option>
+                                            @endforeach
+                                        </select>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light m-0 p-1">
+                        <div class="text-white">
+                            <a id="BtnUpdateLintasHari" class="btn btn-app btn-primary mr-0 mt-0 mb-0 text-white BtnUpdateLintasHari"><span><i class="fa fa-download"></i></span> UPDATE ABSENSI</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div><!-- col end -->
+
+        <div class="col-md-12">
             <!-- BEGIN FORM-->
             {!! Form::open(['route' => 'hris.mdabsenhadir.ajax_exportexcel', 'id' => 'formExport', 'name' => 'formExport','method'=>'post']) !!}
 
@@ -134,40 +216,7 @@
         {!! Form::close() !!}
         <!-- END FORM-->
 
-        <div class="col-md-4">
-            <div class="card shadow">
-                <div class="card-header text-white bg-gradient-primary p-2">
-                    <div class="card-title">MESIN ABSENSI</div>
-                    <div class="card-options ">
-                        <a href="#" class="card-options-collapse mr-2" data-toggle="card-collapse"><i class="fe fe-chevron-up text-white"></i></a>
-                    </div>
-                </div>
-                <div class="card-body p-3">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label class="form-label">TANGGAL ABSENSI : </label>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <div class="input-group-text">
-                                            <i class="fa fa-calendar tx-16 lh-0 op-6"></i>
-                                        </div>
-                                    </div>
-                                    <input readonly id="tanggal_mesin_absensi" class="form-control fc-datepicker" placeholder="DD-MM-YYYY" type="text">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer bg-light m-0 p-1">
-                    <div class="text-white">
-                        <a id="btn-updateKehadiran" class="btn btn-app btn-primary mr-0 mt-0 mb-0 text-white"><span><i class="fa fa-download"></i></span> UPDATE ABSENSI</a>
-                    </div>
-                </div>
-
-            </div>
-        </div><!-- col end -->
-
+        
 
         <div id="data-absensi-karyawan" class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
             <div class="card shadow">
@@ -1571,6 +1620,97 @@
             this.value = val;
         });
 
+    </script>
+    <script>
+        $('.data_range').daterangepicker({
+            ranges: {
+                'Hari ini': [moment(), moment()],
+                'Kemarin': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                '7 Hari Kemarin': [moment().subtract(6, 'days'), moment()],
+                '30 Hari Kemarin': [moment().subtract(29, 'days'), moment()],
+                'Bulan Sekarang': [moment().startOf('month'), moment().endOf('month')],
+                'Bulan Kemarin': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            },
+            startDate: moment().subtract(29, 'days'),
+            endDate: moment()
+            // startDate: moment().startOf('month'),
+            // endDate: moment().endOf('month')
+            }, function(start, end) {
+                $('#daterange-btn span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+        })
+
+        jQuery(document).ready(function($) {
+            const BtnUpdateLintasHari = document.getElementsByClassName('BtnUpdateLintasHari')[0];
+            const EmployeeID = document.getElementsByClassName("EmployeeID");
+
+            BtnUpdateLintasHari.addEventListener('click', function(event) {
+                let tmp = EmployeeID[0].value;
+                
+                if (tmp == ''||tmp==null) {
+                    swal({
+                        title: "Harap Ceklis",
+                        text: "Ceklis Data Yang Akan diVerifikasi",
+                        icon: "warning",
+                        button : false,
+                    });
+                } else{
+                    event.preventDefault();
+                    const submited =document.getElementsByTagName('form')[0];
+                    swal({
+                        title: 'Apakah Anda Yakin ?',
+                        text: 'Update Absen Lintas Hari',
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: 'UPDATE',
+                        cancelButtonText: 'TUTUP'
+                    },function(isConfirm){
+                        if(isConfirm) {
+                            $('#BtnUpdateLintasHari').addClass("btn-loading");
+                            $("#BtnUpdateLintasHari").html('Please wait...');
+                            $("#BtnUpdateLintasHari").attr("disabled", true);
+
+                            $.ajax({
+                                data: $('#form_update_lintashari').serialize(),
+                                url: '{{ route("hris.mdabsenhadir.download_mesin_kehadiran_lintas") }}',           
+                                type: "post",
+                                dataType: 'json',           
+                                success: function (data) {
+                                    
+
+                                    if(data == "ADA") {
+                                        notif({
+                                            msg: "<b>Info:</b> Data berhasil di UPDATE.",
+                                            type: "info"
+                                        });
+                                    } else {
+                                        notif({
+                                            msg: "<b>Info:</b> Data Tidak Ditemukan, UPDATE GAGAL.",
+                                            type: "warning"
+                                        });
+                                    }
+
+                                    $('#BtnUpdateLintasHari').removeClass("btn-loading");
+                                    $("#BtnUpdateLintasHari").html('<span><i class="fa fa-download"></i></span> UPDATE ABSENSI');
+                                    $("#BtnUpdateLintasHari").attr("disabled", false);
+                                    $("#btn-caridata").click();
+                                   
+                                },
+                                error: function (xhr, status, error) {
+                                    notif({
+                                        msg: "<b>Error:</b> Oops data gagal di UPDATE.",
+                                        type: "error"
+                                    });
+
+                                    $('#BtnUpdateLintasHari').removeClass("btn-loading");
+                                    $("#BtnUpdateLintasHari").attr("disabled", false);
+                                    $("#BtnUpdateLintasHari").html('<span><i class="fa fa-download"></i></span> UPDATE ABSENSI');
+                                }
+                            }); 
+                        }
+                    });    
+                }
+            });
+        });
     </script>
 
 @endsection

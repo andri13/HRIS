@@ -125,12 +125,16 @@ class RefHariLiburController extends AdminBaseController
     {
         $id = $request->id;
         $nama_hari_libur = $request->nama_hari_libur;
-        $tanggal_libur = $request->tanggal_libur;
+        $tanggal_libur =date('Y-m-d', strtotime($request->tanggal_libur)); ;
         $status_absen = $request->status_absen;
 
         $findDT = RefHariLibur::where('id','=', $id)->count();
         $update_libur=[
             'status_absen'=>$status_absen
+        ];
+        $jadwal_kerjaLN=[
+            'mulai_jam_kerja'=>null,
+            'akhir_jam_kerja'=>null,
         ];
         if($status_absen=='LP'){
             MasterDataAbsenKehadiran::where('tanggal_berjalan',$tanggal_libur)
@@ -148,6 +152,8 @@ class RefHariLiburController extends AdminBaseController
         //     // ->where('absen_masuk_kerja',null)
         //     // ->where('absen_pulang_kerja',null)
             ->update($update_libur);
+
+            MasterDataAbsenKehadiran::where('tanggal_berjalan',$tanggal_libur)->update($jadwal_kerjaLN);
         }
 
         if($findDT > 0) {
@@ -176,13 +182,13 @@ class RefHariLiburController extends AdminBaseController
 
         if($findDT) {
             $update_libur=[
-                'status_absen'=>'M'
+                'status_absen'=>null
             ];
             MasterDataAbsenKehadiran::where('tanggal_berjalan',$findDT->tanggal_libur)
                 ->where('status_absen',$findDT->status_absen)
-                ->where('absen_masuk_kerja',null)
-                ->where('absen_pulang_kerja',null)
-                ->where('nomor_absen_ijin',null)
+                ->where('absen_masuk_kerja','!=',null)
+                ->where('absen_pulang_kerja','!=',null)
+                // ->where('nomor_absen_ijin',null)
                 ->update($update_libur);
 
 

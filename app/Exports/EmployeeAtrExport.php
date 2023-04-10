@@ -32,7 +32,7 @@ use Illuminate\Support\Facades\DB;
 
 use Auth;
 
-class EmployeeAtrExport implements FromQuery, WithMapping, ShouldAutoSize, WithEvents, WithCustomStartCell, WithTitle
+class EmployeeAtrExport implements FromQuery, WithMapping, ShouldAutoSize, WithEvents, WithCustomStartCell, WithTitle, WithColumnFormatting
 {
     use Exportable;
 
@@ -287,12 +287,12 @@ class EmployeeAtrExport implements FromQuery, WithMapping, ShouldAutoSize, WithE
             $status_jabatan,
             $department_name,
             $sub_dept_name,
-            $join_date,
+            Date::stringToExcel( $join_date),
             $status_aktif,
             $status_kontrak_tetap,
             $status_staff,
             $tempat_lahir,
-            $tanggal_lahir,
+            Date::stringToExcel($tanggal_lahirf),
             $agama,
             $ibu_kandung,
             $status_kawin,
@@ -313,37 +313,62 @@ class EmployeeAtrExport implements FromQuery, WithMapping, ShouldAutoSize, WithE
             $kecamatan,
             $kelurahan_desa,
             $alamat_sementara,
-            $tanggal_resign,
+            Date::stringToExcel($tanggal_resign),
             $tunjangan,
             $kode_grade,
             $referensi,
             $employee_name_atasan,
             $status_aktif_bpjs_tk,
-            $tanggal_bpjs_ketenagakerjaan,
+            Date::stringToExcel($tanggal_bpjs_ketenagakerjaan),
+            // $tanggal_bpjs_ketenagakerjaan,
             $nomor_bpjs_ketenagakerjaan,
             $status_aktif_bpjs_ks,
-            $tanggal_bpjs_kesehatan,
+            Date::stringToExcel($tanggal_bpjs_kesehatan),
             $nomor_bpjs_kesehatan,
             $pengalaman_bekerja,
             $nama_kerabat,
             $nomor_tlpn_kerabat,
             $hubungan_kerabat,
             $alamat_kerabat,
-            $tanggal_vaccine1,
+            Date::stringToExcel($tanggal_vaccine1),
             $nama_vaksin1,
-            $tanggal_vaccine2,
+            Date::stringToExcel($tanggal_vaccine2),
             $nama_vaksin2,
-            $tanggal_vaccine3,
+            Date::stringToExcel($tanggal_vaccine3),
             $nama_vaksin3,
             $golongan_sim,
             $nomor_sim,
-            $tanggal_expire_sim,
+            Date::stringToExcel($tanggal_expire_sim),
             $catatan,
-            $tanggal_mulai_kontrak,
-            $tanggal_akhir_kontrak,
+            Date::stringToExcel($tanggal_mulai_kontrak),
+            Date::stringToExcel($tanggal_akhir_kontrak),
             $catatan_kontrak,
             $created_at,
             $updated_at,
+        ];
+    }
+    public function columnFormats(): array
+    {
+        return [
+            'I' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'N' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'AI' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+
+            'AO' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'AR' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'AY' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+
+            'BA' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'BC' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            'BG' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+
+            'BI' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+
+            'BJ' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+
+
+
+            // 'N' => NumberFormat::FORMAT_DATE_DMYMINUS
         ];
     }
 

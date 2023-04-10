@@ -471,6 +471,10 @@ class DataKehadiranInOutEditedController extends AdminBaseController
         $tanggal_resign = $request->tanggal_resign;
         $operator = $request->operator;
 
+        if($absen_masuk_kerja!=null & $absen_pulang_kerja!=null ){
+            $status_absen = null;
+        }
+
         $query = DataKehadiranInOutEdited::create([
             'uuid' => Str::uuid(),
             'tanggal_absen' => $tanggal_berjalan,

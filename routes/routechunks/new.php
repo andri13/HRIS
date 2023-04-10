@@ -27,4 +27,11 @@ Route::prefix('koreksipotongan')->group(function() {
 
 }); 
 
+Route::prefix('mdabsenhadir')->group(function() {
+    Route::post('download_mesin_kehadiran-lintas', 'MdAbsenHadirController@download_mesin_kehadiran_lintas')->name("hris.mdabsenhadir.download_mesin_kehadiran_lintas");
+
+}); 
+
+
+
 ?>

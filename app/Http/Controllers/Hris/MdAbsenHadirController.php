@@ -658,7 +658,7 @@ class MdAbsenHadirController extends AdminBaseController
 
                 //Andri
                 foreach($kehadiran as $val) {
-                    if((!$val["absen_out"]) || ($val["operator"]=='system')) {
+                    if($val["operator"]=='system') {
                         if($val["status_absen"] == "TL" || $val["status_absen"] == "M" || $val["status_absen"] == "IKS" || $val["status_absen"] == "" || !$val["status_absen"]|| $val["status_absen"] == "LN" || $val["status_absen"] == "LP") {
                             if($val["status_absen"] == "LN"){
                                 $status_absen='LN';
@@ -692,12 +692,12 @@ class MdAbsenHadirController extends AdminBaseController
                 
                     $DT = date_diff(date_create($jadwal_in),date_create($absen_in));
                     $PC = date_diff(date_create($jadwal_out),date_create($absen_out));
-                    if( $absen_in!=null && $absen_in>$jadwal_in ){
+                    if( $jadwal_in!=null && $absen_in!=null && $absen_in>$jadwal_in ){
                         $total_DT = $DT->i +($DT->h*60);
                     }else{
                         $total_DT=0;
                     }
-                    if( $absen_out !=null && $absen_out<$jadwal_out){
+                    if( $jadwal_out !=null && $absen_out !=null && $absen_out<$jadwal_out){
                         $total_PC = $PC->i +($PC->h*60);
                     }else{
                         $total_PC=0;
@@ -794,15 +794,15 @@ class MdAbsenHadirController extends AdminBaseController
                         b.Badgenumber
                 ") );
 
-            foreach($checkinoutSM as $value) {
-                MasterDataAbsenKehadiran::where('tanggal_berjalan','=', $tanggal_mesin_absensi)
-                ->where('enroll_id','=', $value->enroll_id)
-                ->update([
-                    'absen_masuk_kerja' => $value->absen_in,
-                    'absen_pulang_kerja' => $value->absen_out,
-                    'status_absen' => $value->status_absen
-                ]);
-            }
+            // foreach($checkinoutSM as $value) {
+            //     MasterDataAbsenKehadiran::where('tanggal_berjalan','=', $tanggal_mesin_absensi)
+            //     ->where('enroll_id','=', $value->enroll_id)
+            //     ->update([
+            //         'absen_masuk_kerja' => $value->absen_in,
+            //         'absen_pulang_kerja' => $value->absen_out,
+            //         'status_absen' => $value->status_absen
+            //     ]);
+            // }
 
             $checkinoutAtt =  DB::connection('sqlsrv2')->select(
                 DB::raw("
@@ -852,6 +852,585 @@ class MdAbsenHadirController extends AdminBaseController
                     ]);
                 }
             }
+        } else {
+            $adaData = "TIDAK ADA";
+        }
+
+        echo json_encode($adaData);
+    }
+
+    // public function download_mesin_kehadiran(Request $request)
+    // {
+    //     $tanggal_mesin_absensi = $request->tanggal_mesin_absensi;
+    //     // $enroll_id = ['4913'];
+    //     // $enroll_id_str = implode(',', $enroll_id);
+    //     // $tanggal_besok= date('Y-m-d', strtotime('+1 days', strtotime($tanggal_mesin_absensi)));
+    //     $adaData = "ADA";
+    //     $countData = MasterDataAbsenKehadiran::whereRaw("
+    //             tanggal_berjalan = '" . $tanggal_mesin_absensi . "'
+    //         ")
+    //         ->count();
+
+
+
+
+    //     $enroll_id = ['1755'];
+    //     $enroll_id_str = implode(',', $enroll_id);
+    //     $tanggal_awal='2023-03-26';
+    //     $tanggal_akhir='2023-04-03';
+
+
+            
+    //     if($countData > 0 ) {
+    //         // $checkinout =  DB::connection('sqlsrv2')->select(
+    //         // DB::raw("
+    //         //     SELECT CONVERT
+    //         //         ( VARCHAR ( 10 ), a.CHECKTIME, 126 ) AS tanggal_absen,
+    //         //         b.Badgenumber AS enroll_id,
+    //         //         MIN ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) ) AS absen_in,
+    //         //         CASE WHEN MIN ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) ) = MAX ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) )
+    //         //             THEN NULL
+    //         //             ELSE MAX ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) )
+    //         //         END AS absen_out,
+    //         //         CASE WHEN MIN ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) ) = MAX ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) )
+    //         //             THEN 'TL'
+    //         //             ELSE NULL
+    //         //         END status_absen
+    //         //     FROM
+    //         //         CHECKINOUT a
+    //         //         JOIN USERINFO b ON ( a.USERID = b.USERID )
+    //         //     WHERE
+    //         //         CONVERT ( VARCHAR ( 10 ), a.CHECKTIME, 126 ) >= '" . $tanggal_mesin_absensi . "'
+    //         //         and
+    //         //         CONVERT ( VARCHAR ( 10 ), a.CHECKTIME, 126 ) <= '" . $tanggal_besok . "'
+    //         //         and b.Badgenumber IN ({$enroll_id_str})
+    //         //     GROUP BY
+    //         //         CONVERT ( VARCHAR ( 10 ), a.CHECKTIME, 126 ),
+    //         //         b.Badgenumber
+    //         // ") );
+
+    //         // $checkinout =  DB::connection('sqlsrv2')->select(
+    //         // DB::raw("
+    //         //     SELECT CONVERT
+    //         //         ( VARCHAR ( 10 ), a.CHECKTIME, 126 ) AS tanggal_absen,
+    //         //         b.Badgenumber AS enroll_id,
+    //         //         MIN ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) ) AS absen_in,
+    //         //         CASE WHEN MIN ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) ) = MAX ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) )
+    //         //             THEN NULL
+    //         //             ELSE MAX ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) )
+    //         //         END AS absen_out,
+    //         //         CASE WHEN MIN ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) ) = MAX ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) )
+    //         //             THEN 'TL'
+    //         //             ELSE NULL
+    //         //         END status_absen
+    //         //     FROM
+    //         //         CHECKINOUT a
+    //         //         JOIN USERINFO b ON ( a.USERID = b.USERID )
+    //         //     WHERE
+    //         //         CONVERT ( VARCHAR ( 10 ), a.CHECKTIME, 126 ) >= '" . $tanggal_mesin_absensi . "'
+    //         //         and
+    //         //         CONVERT ( VARCHAR ( 10 ), a.CHECKTIME, 126 ) <= '" . $tanggal_besok . "'
+    //         //         and b.Badgenumber IN ({$enroll_id_str})
+    //         //     GROUP BY
+    //         //         CONVERT ( VARCHAR ( 10 ), a.CHECKTIME, 126 ),
+    //         //         b.Badgenumber
+    //         // ") );
+    //         // foreach ($a as $key1 => $value1) {
+    //         //     $x[]=[
+    //         //         'tanggal_absen'=> $value1[0]->tanggal_absen,
+    //         //         'enroll_id'=> $key1,
+    //         //         'absen_in'=> $value1[0]->absen_in,
+    //         //         'absen_out'=> $value1[0]->absen_out,
+    //         //         'absen_in_lintas'=> $value1[1]->absen_in??null,
+    //         //         'absen_out_lintas'=> $value1[1]->absen_out??null,
+    //         //         'status_absen'=> null
+    //         //     ];
+    //         // }
+
+    //         // foreach($x as $value) {
+    //         //     dd($value);
+    //         //     $kehadiran = MasterDataAbsenKehadiran::where('tanggal_berjalan',$tanggal_mesin_absensi)->where('enroll_id',$value['enroll_id'])->first();
+    //         //     if(($kehadiran->operator=='system') || ($kehadiran->operator=='system_lintashari')) {
+    //         //         if($kehadiran->status_absen == "TL" || $kehadiran->status_absen == "M" || $kehadiran->status_absen == "IKS" || $kehadiran->status_absen == "" || !$kehadiran->status_absen|| $kehadiran->status_absen == "LN" || $kehadiran->status_absen == "LP") {
+    //         //             if($kehadiran->status_absen == "LN"){
+    //         //                 $status_absen='LN';
+    //         //             }
+    //         //             else{
+    //         //                 $status_absen=$kehadiran->status_absen;
+    //         //             }
+    //         //             $jadwal_in=$kehadiran->mulai_jam_kerja;
+    //         //             $jadwal_out=$kehadiran->akhir_jam_kerja;
+    //         //             // jadwal kerja litas hari
+    //         //             if($jadwal_in>$jadwal_out){
+    //         //                $absenIn=$value['absen_in'];
+    //         //                $absenOut=$value['absen_out'];
+
+    //         //             }
+    //         //             // jadwal kerja normal
+    //         //             else{
+    //         //                 $absenIn=$value['absen_in'];
+    //         //                 $absenOut=$value['absen_out'];
+                        
+    //         //             }
+                       
+    //         //             $z=[
+    //         //                     'absen_masuk_kerja' => $value->absen_in,
+    //         //                     'absen_pulang_kerja' => $value->absen_out,
+    //         //                     'status_absen' => $status_absen
+    //         //                 ];
+
+
+    //         //             // MasterDataAbsenKehadiran::where('tanggal_berjalan','=', $tanggal_mesin_absensi)
+    //         //             // ->where('enroll_id','=', $val["enroll_id"])
+    //         //             // ->update();
+    //         //         }
+    //         //     }
+    //         // }
+
+    //         $results =  DB::connection('sqlsrv2')->select(DB::raw("
+    //                 SELECT
+    //                 CONVERT ( VARCHAR ( 10 ), a.CHECKTIME, 126 ) AS tanggal_absen,
+    //                     b.Badgenumber AS enroll_id,
+    //                     CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) AS absen_log
+    //                 FROM
+    //                     CHECKINOUT a
+    //                     JOIN USERINFO b ON ( a.USERID = b.USERID )
+    //                 WHERE
+    //                     CONVERT ( VARCHAR ( 10 ), a.CHECKTIME, 126 ) >= '" . $tanggal_awal . "'
+    //                     AND
+    //                     CONVERT ( VARCHAR ( 10 ), a.CHECKTIME, 126 ) <= '" . $tanggal_akhir . "'
+    //                     AND 
+    //                     b.Badgenumber IN ({$enroll_id_str})
+    //             "));
+
+    //         $a=collect($results)->groupBy(['tanggal_absen','enroll_id','absen_log']);
+    //         foreach ($a as $key1 => $value1) {
+    //             foreach ($value1 as $key2 => $value2) {
+    //                foreach ($value2 as $key3 => $value3) {
+    //                 $x[]=[
+    //                     'tanggal_absen'=> $key1,
+    //                     'enroll_id'=> $key2,
+    //                     'absen_log'=> $key3,
+    //                 ];
+    //                }
+    //             }
+    //         }
+    //         // dd($x);
+    //         $kehadiran = MasterDataAbsenKehadiran::where('tanggal_berjalan','>=',$tanggal_awal)
+    //                     ->where('tanggal_berjalan','<=',$tanggal_akhir)
+    //                     ->wherein('enroll_id',$enroll_id)            
+    //                     ->get();
+
+    //         foreach ($kehadiran as $key4 => $value4) {
+    //             if(($value4->operator=='system') || ($value4->operator=='system_lintashari')) {
+    //                 if($value4->status_absen == "TL" || $value4->status_absen == "M" || $value4->status_absen == "IKS" || $value4->status_absen == "" || !$value4->status_absen|| $value4->status_absen == "LN" || $value4->status_absen == "LP") {
+                        
+    //                     $jadwal_in=$value4->mulai_jam_kerja;
+    //                     $jadwal_out=$value4->akhir_jam_kerja;
+                        
+    //                     $jadwal_in_min=date("H:i", strtotime('-2 hours', strtotime($jadwal_in)));
+    //                     $jadwal_in_max=date("H:i", strtotime('+1 hours 59 minutes', strtotime($jadwal_in)));
+
+    //                     $jadwal_out_min=date("H:i", strtotime('-2 hours', strtotime($jadwal_out)));
+    //                     $jadwal_out_max=date("H:i", strtotime('+1 hours 59 minutes', strtotime($jadwal_out)));
+
+    //                     $tanggal_besok= date('Y-m-d', strtotime('+1 days', strtotime($value4->tanggal_berjalan)));
+
+    //                     // dd($jadwal_in_min.' --- '.$jadwal_in_max);
+    //                     // jadwal kerja litas hari
+    //                     $absenIn=null;
+    //                     $absenOut=null;
+    //                     if($jadwal_in>$jadwal_out){
+    //                         // dd(1);
+    //                         $absenIn=collect($x)->where('tanggal_absen',$value4->tanggal_berjalan)->where('enroll_id',$value4->enroll_id)
+    //                             ->where('absen_log','>=', $jadwal_in_min)->where('absen_log','<=', $jadwal_in_max)->min('absen_log');
+    //                         // dd($absenIn);
+    //                         $absenOut=collect($x)->where('tanggal_absen',$tanggal_besok)->where('enroll_id',$value4->enroll_id)
+    //                             ->where('absen_log','>=', $jadwal_out_min)->where('absen_log','<=', $jadwal_out_max)->max('absen_log');
+    //                     }
+    //                     // jadwal kerja normal
+    //                     else{
+    //                         $absenIn=collect($x)->where('tanggal_absen',$value4->tanggal_berjalan)->where('enroll_id',$value4->enroll_id)
+    //                             ->where('absen_log','>=', $jadwal_in_min)->where('absen_log','<=', $jadwal_in_max)->min('absen_log');
+    //                         $absenOut=collect($x)->where('tanggal_absen',$value4->tanggal_berjalan)->where('enroll_id',$value4->enroll_id)
+    //                             ->where('absen_log','>=', $jadwal_out_min)->where('absen_log','<=', $jadwal_out_max)->min('absen_log');
+    //                     }
+    //                     if($value4->status_absen == "LN"){
+    //                         $status_absen='LN';
+    //                     }
+    //                     else if( $absenIn!=null && $absenOut!=null){
+    //                         $status_absen=null;
+    //                     }
+    //                     else{
+    //                         $status_absen=$value4->status_absen;
+    //                     }
+                        
+    //                     $z[]=[    
+    //                             'tanggal_berjalan'=> $value4->tanggal_berjalan,
+    //                             'absen_masuk_kerja' => $absenIn,
+    //                             'absen_pulang_kerja' => $absenOut,
+    //                             'status_absen' => $status_absen
+    //                         ];
+
+
+    //                     // MasterDataAbsenKehadiran::where('tanggal_berjalan','=', $tanggal_mesin_absensi)
+    //                     // ->where('enroll_id','=', $val["enroll_id"])
+    //                     // ->update();
+    //                 }
+    //             }
+    //         }
+    //         dd($z);
+
+
+    //         // dd($x);
+    //         $y=collect($x)->where('tanggal_absen','2023-03-27')->where('absen_log','>=','05:00')->where('absen_log','<=','10:00')->min('absen_log');
+    //         dd($y);
+
+
+    //         // untuk hitung dt pc
+    //         $masterAbsen=MasterDataAbsenKehadiran::where('tanggal_berjalan',$tanggal_mesin_absensi)->get();
+
+    //             foreach ($masterAbsen as $k => $v) {
+    //                 $jadwal_in=$v->mulai_jam_kerja;
+    //                 $jadwal_out=$v->akhir_jam_kerja;
+
+    //                 $absen_in=$v->absen_masuk_kerja;
+    //                 $absen_out=$v->absen_pulang_kerja;
+
+    //                 $durasi_kerja=date_diff(date_create($jadwal_in),date_create($jadwal_out));
+    //                 $durasi_kerja_menit=$durasi_kerja->i +($durasi_kerja->h*60);
+                
+    //                 $DT = date_diff(date_create($jadwal_in),date_create($absen_in));
+    //                 $PC = date_diff(date_create($jadwal_out),date_create($absen_out));
+    //                 if( $absen_in!=null && $absen_in>$jadwal_in ){
+    //                     $total_DT = $DT->i +($DT->h*60);
+    //                 }else{
+    //                     $total_DT=0;
+    //                 }
+    //                 if( $absen_out !=null && $absen_out<$jadwal_out){
+    //                     $total_PC = $PC->i +($PC->h*60);
+    //                 }else{
+    //                     $total_PC=0;
+    //                 }
+    
+    //                 $jumlah_menit_absen_dtpc=$total_DT+$total_PC;
+    //                 if( $absen_in!=null && $absen_out !=null){
+    //                     $jumlah_absen_menit_kerja=$durasi_kerja_menit-$jumlah_menit_absen_dtpc;
+    //                 }
+    //                 else{
+    //                     $jumlah_absen_menit_kerja=0;
+    //                 }
+
+    //                 $jumlah_menit_absen_dtpc=$total_DT+$total_PC;
+    //                 $data_update=[
+    //                     'jumlah_menit_absen_dtpc'=>$jumlah_menit_absen_dtpc,
+    //                     'jumlah_absen_menit_kerja'=>$durasi_kerja_menit-$jumlah_menit_absen_dtpc,
+    //                     'jumlah_menit_absen_dt'=>$total_DT,
+    //                     'jumlah_menit_absen_pc'=>$total_PC,
+    //                 ];
+    //                 MasterDataAbsenKehadiran::where('tanggal_berjalan', $tanggal_mesin_absensi)
+    //                             ->where('enroll_id', $v->enroll_id)->update($data_update);
+
+    //             }
+    //         // end andri
+    //         $setClearMTL = MasterDataAbsenKehadiran::selectRaw("
+    //             substr(tanggal_berjalan,1, 10) tanggal_absen,
+    //             enroll_id,
+    //             substr(absen_masuk_kerja, 1, 5) absen_in,
+    //             substr(absen_pulang_kerja, 1, 5) absen_out,
+    //             null status_absen
+    //         ")
+    //         ->whereRaw("
+    //             tanggal_berjalan = '" . $tanggal_mesin_absensi . "'
+    //             AND absen_masuk_kerja is not null AND absen_pulang_kerja is not null
+    //             AND status_absen in ('M', 'TL')
+    //         ")
+    //         ->get();
+
+    //         foreach($setClearMTL as $value) {
+    //             MasterDataAbsenKehadiran::where('tanggal_berjalan','=', $tanggal_mesin_absensi)
+    //             ->where('enroll_id','=', $value["enroll_id"])
+    //             ->update([
+    //                 'status_absen' => $value["status_absen"]
+    //             ]);
+    //         }
+
+    //         $setSetTL = MasterDataAbsenKehadiran::selectRaw("
+    //             substr(tanggal_berjalan,1, 10) tanggal_absen,
+    //             enroll_id,
+    //             substr(absen_masuk_kerja, 1, 5) absen_in,
+    //             substr(absen_pulang_kerja, 1, 5) absen_out,
+    //             'TL' status_absen
+    //         ")
+    //         ->whereRaw("
+    //             tanggal_berjalan = '" . $tanggal_mesin_absensi . "'
+    //             AND status_absen in ('M', 'TL')
+    //             AND ((absen_masuk_kerja is null AND absen_pulang_kerja is not null) OR (absen_masuk_kerja is not null AND absen_pulang_kerja is null))
+    //         ")
+    //         ->get();
+
+    //         foreach($setSetTL as $value) {
+    //             MasterDataAbsenKehadiran::where('tanggal_berjalan','=', $tanggal_mesin_absensi)
+    //             ->where('enroll_id','=', $value["enroll_id"])
+    //             ->update([
+    //                 'status_absen' => $value["status_absen"]
+    //             ]);
+    //         }
+
+    //         $checkinoutSM =  DB::connection('sqlsrv2')->select(
+    //             DB::raw("
+    //                 SET DATEFIRST 1
+    //                 SELECT CONVERT
+    //                     ( VARCHAR ( 10 ), a.CHECKTIME, 126 ) AS tanggal_absen,
+    //                     b.Badgenumber AS enroll_id,
+    //                     MIN ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) ) AS absen_in,
+    //                     CASE WHEN MIN ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) ) = MAX ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) )
+    //                         THEN NULL
+    //                         ELSE MAX ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) )
+    //                     END AS absen_out,
+    //                     CASE WHEN MIN ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) ) = MAX ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) )
+    //                         THEN 'TL'
+    //                         ELSE NULL
+    //                     END status_absen,
+    //                     DATEPART(WEEKDAY, CONVERT ( VARCHAR ( 10 ), a.CHECKTIME, 126 )) - 1 kode_hari
+    //                 FROM
+    //                     CHECKINOUT a
+    //                     JOIN USERINFO b ON ( a.USERID = b.USERID )
+    //                 WHERE
+    //                     CONVERT ( VARCHAR ( 10 ), a.CHECKTIME, 126 ) = '" . $tanggal_mesin_absensi . "'
+    //                     AND DATEPART(WEEKDAY, CONVERT ( VARCHAR ( 10 ), a.CHECKTIME, 126 )) - 1 IN (5,6)
+    //                 GROUP BY
+    //                     CONVERT ( VARCHAR ( 10 ), a.CHECKTIME, 126 ),
+    //                     b.Badgenumber
+    //             ") );
+
+    //         foreach($checkinoutSM as $value) {
+    //             MasterDataAbsenKehadiran::where('tanggal_berjalan','=', $tanggal_mesin_absensi)
+    //             ->where('enroll_id','=', $value->enroll_id)
+    //             ->update([
+    //                 'absen_masuk_kerja' => $value->absen_in,
+    //                 'absen_pulang_kerja' => $value->absen_out,
+    //                 'status_absen' => $value->status_absen
+    //             ]);
+    //         }
+
+    //         $checkinoutAtt =  DB::connection('sqlsrv2')->select(
+    //             DB::raw("
+    //                 SELECT
+    //                     NEWID() uuid,
+    //                     CONVERT( VARCHAR ( 10 ), a.CHECKTIME, 126 ) AS tanggal_absen,
+    //                     b.Badgenumber AS enroll_id,
+    //                     MIN ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) ) AS absen_in,
+    //                     MAX ( CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) ) AS absen_out,
+    //                     null type
+    //                 FROM
+    //                     CHECKINOUT a join	USERINFO b on (a.USERID = b.USERID)
+    //                 WHERE
+    //                     CONVERT ( VARCHAR ( 10 ), a.CHECKTIME, 126 ) = '" . $tanggal_mesin_absensi . "'
+    //                 GROUP BY
+    //                     CONVERT( VARCHAR ( 10 ), a.CHECKTIME, 126 ),
+    //                     b.Badgenumber,
+    //                     a.CHECKTYPE
+    //                 ORDER BY
+    //                     CONVERT( VARCHAR ( 10 ), a.CHECKTIME, 126 ) asc
+    //             ") );
+
+    //         foreach($checkinoutAtt as $value) {
+
+    //             $checkinoutAttCount = CheckInOut::whereRaw("
+    //                 tanggal_absen = '" . $tanggal_mesin_absensi . "'
+    //                 AND enroll_id = '" . $value->enroll_id . "'
+    //             ")
+    //             ->count();
+
+    //             if($checkinoutAttCount > 0) {
+    //                 CheckInOut::where('tanggal_absen','=', $tanggal_mesin_absensi)
+    //                 ->where('enroll_id','=', $value->enroll_id)
+    //                 ->update([
+    //                     'absen_in' => $value->absen_in,
+    //                     'absen_out' => $value->absen_out,
+    //                     'type' => $value->type
+    //                 ]);
+    //             } else {
+    //                 CheckInOut::create([
+    //                     'uuid' => $value->uuid,
+    //                     'tanggal_absen' => $value->tanggal_absen,
+    //                     'enroll_id' => $value->enroll_id,
+    //                     'absen_in' => $value->absen_in,
+    //                     'absen_out' => $value->absen_out,
+    //                     'type' => $value->type
+    //                 ]);
+    //             }
+    //         }
+    //     } else {
+    //         $adaData = "TIDAK ADA";
+    //     }
+
+    //     echo json_encode($adaData);
+    // }
+
+    public function download_mesin_kehadiran_lintas(Request $request)
+    {
+        // dd($request->all());
+
+        $daterange = explode(" - ", $request->periode_absen);
+        $tanggal_awal = date('Y-m-d', strtotime($daterange[0]));
+        $tanggal_akhir = date('Y-m-d', strtotime($daterange[1]));
+        $enroll_id = $request->selectEmployeeID;
+        $enroll_id_str = implode(',', $enroll_id);
+        $adaData = "ADA";
+
+        $kehadiran = MasterDataAbsenKehadiran::where('tanggal_berjalan','>=',$tanggal_awal)
+                    ->where('tanggal_berjalan','<=',$tanggal_akhir)
+                    ->wherein('enroll_id',$enroll_id)            
+                    ->get();
+        if(count($kehadiran) > 0 ) {
+            $query =  DB::connection('sqlsrv2')->select(DB::raw("
+                    SELECT
+                    CONVERT ( VARCHAR ( 10 ), a.CHECKTIME, 126 ) AS tanggal_absen,
+                        b.Badgenumber AS enroll_id,
+                        CONVERT ( VARCHAR ( 5 ), a.CHECKTIME, 114 ) AS absen_log
+                    FROM
+                        CHECKINOUT a
+                        JOIN USERINFO b ON ( a.USERID = b.USERID )
+                    WHERE
+                        CONVERT ( VARCHAR ( 10 ), a.CHECKTIME, 126 ) >= '" . $tanggal_awal . "'
+                        AND
+                        CONVERT ( VARCHAR ( 10 ), a.CHECKTIME, 126 ) <= '" . $tanggal_akhir . "'
+                        AND 
+                        b.Badgenumber IN ({$enroll_id_str})
+                "));
+
+            $results=collect($query)->groupBy(['tanggal_absen','enroll_id','absen_log']);
+            foreach ($results as $key1 => $value1) {
+                foreach ($value1 as $key2 => $value2) {
+                   foreach ($value2 as $key3 => $value3) {
+                    $records[]=[
+                        'tanggal_absen'=> $key1,
+                        'enroll_id'=> $key2,
+                        'absen_log'=> $key3,
+                    ];
+                   }
+                }
+            }
+
+            foreach ($kehadiran as $key4 => $value4) {
+                if(($value4->nomor_form_lembur==null) &&(($value4->operator=='system') || ($value4->operator=='system_lintashari'))) {
+                    if($value4->status_absen == "TL" || $value4->status_absen == "M" || $value4->status_absen == "IKS" || $value4->status_absen == "" || !$value4->status_absen|| $value4->status_absen == "LN" || $value4->status_absen == "LP") {
+                        
+                        $jadwal_in=$value4->mulai_jam_kerja;
+                        $jadwal_out=$value4->akhir_jam_kerja;
+                        
+                        $jadwal_in_min=date("H:i", strtotime('-2 hours', strtotime($jadwal_in)));
+                        $jadwal_in_max=date("H:i", strtotime('+1 hours 59 minutes', strtotime($jadwal_in)));
+
+                        $jadwal_out_min=date("H:i", strtotime('-2 hours', strtotime($jadwal_out)));
+                        $jadwal_out_max=date("H:i", strtotime('+1 hours 59 minutes', strtotime($jadwal_out)));
+
+                        $tanggal_besok= date('Y-m-d', strtotime('+1 days', strtotime($value4->tanggal_berjalan)));
+                        // dd($tanggal_besok);
+
+                        $absenIn=null;
+                        $absenOut=null;
+                        // jadwal kerja litas hari
+                        if($jadwal_in>$jadwal_out){
+                            // dd(1);
+                            $absenIn=collect($records)->where('tanggal_absen',$value4->tanggal_berjalan)->where('enroll_id',$value4->enroll_id)
+                                ->where('absen_log','>=', $jadwal_in_min)->where('absen_log','<=', $jadwal_in_max)->min('absen_log');
+                            // dd($absenIn);
+                            $absenOut=collect($records)->where('tanggal_absen',$tanggal_besok)->where('enroll_id',$value4->enroll_id)
+                                ->where('absen_log','>=', $jadwal_out_min)->where('absen_log','<=', $jadwal_out_max)->max('absen_log');
+                        }
+                        // jadwal kerja null atau libur
+                        else if($jadwal_in==null && $jadwal_out==null){
+                            $absenIn=null;
+                            $absenOut=null;
+                        }
+                        // jadwal kerja normal
+                        else{
+                            $absenIn=collect($records)->where('tanggal_absen',$value4->tanggal_berjalan)->where('enroll_id',$value4->enroll_id)
+                                ->where('absen_log','>=', $jadwal_in_min)->where('absen_log','<=', $jadwal_in_max)->min('absen_log');
+                            $absenOut=collect($records)->where('tanggal_absen',$value4->tanggal_berjalan)->where('enroll_id',$value4->enroll_id)
+                                ->where('absen_log','>=', $jadwal_out_min)->where('absen_log','<=', $jadwal_out_max)->min('absen_log');
+                        }
+                        if($value4->status_absen == "LN"){
+                            $status_absen='LN';
+                        }
+                        else if(( $absenIn!=null && $absenOut!=null)||($value4->kode_hari==5)||($value4->kode_hari==6)){
+                            $status_absen=null;
+                        }
+                        else if( $absenIn==null && $absenOut==null){
+                            $status_absen='M';
+                        }
+                        else if( $absenIn==null || $absenOut==null){
+                            $status_absen='TL';
+                        }
+                        else{
+                            $status_absen=$value4->status_absen;
+                        }
+                        
+                        $z=[  
+                                'enroll_id'=>$value4->enroll_id,  
+                                'tanggal_berjalan'=> $value4->tanggal_berjalan,
+                                'absen_masuk_kerja' => $absenIn,
+                                'absen_pulang_kerja' => $absenOut,
+                                'status_absen' => $status_absen,
+                                'operator'=>'system_lintashari'
+                            ];
+
+
+                        MasterDataAbsenKehadiran::where('uuid', $value4->uuid)
+                        ->update( $z);
+                    }
+                }
+            }
+            // untuk hitung dt pc
+            $kehadiran2 = MasterDataAbsenKehadiran::where('tanggal_berjalan','>=',$tanggal_awal)
+                    ->where('tanggal_berjalan','<=',$tanggal_akhir)
+                    ->wherein('enroll_id',$enroll_id)            
+                    ->get();
+            foreach ($kehadiran2 as $k => $v) {
+                $jadwal_in=$v->mulai_jam_kerja;
+                $jadwal_out=$v->akhir_jam_kerja;
+
+                $absen_in=$v->absen_masuk_kerja;
+                $absen_out=$v->absen_pulang_kerja;
+
+                $durasi_kerja=date_diff(date_create($jadwal_in),date_create($jadwal_out));
+                $durasi_kerja_menit=$durasi_kerja->i +($durasi_kerja->h*60);
+            
+                $DT = date_diff(date_create($jadwal_in),date_create($absen_in));
+                $PC = date_diff(date_create($jadwal_out),date_create($absen_out));
+                if( $absen_in!=null && $absen_in>$jadwal_in ){
+                    $total_DT = $DT->i +($DT->h*60);
+                }else{
+                    $total_DT=0;
+                }
+                if( $absen_out !=null && $absen_out<$jadwal_out){
+                    $total_PC = $PC->i +($PC->h*60);
+                }else{
+                    $total_PC=0;
+                }
+
+                $jumlah_menit_absen_dtpc=$total_DT+$total_PC;
+                if( $absen_in!=null && $absen_out !=null){
+                    $jumlah_absen_menit_kerja=$durasi_kerja_menit-$jumlah_menit_absen_dtpc;
+                }
+                else{
+                    $jumlah_absen_menit_kerja=0;
+                }
+
+                $jumlah_menit_absen_dtpc=$total_DT+$total_PC;
+                $data_update=[
+                    'jumlah_menit_absen_dtpc'=>$jumlah_menit_absen_dtpc,
+                    'jumlah_absen_menit_kerja'=>$durasi_kerja_menit-$jumlah_menit_absen_dtpc,
+                    'jumlah_menit_absen_dt'=>$total_DT,
+                    'jumlah_menit_absen_pc'=>$total_PC,
+                ];
+                MasterDataAbsenKehadiran::where('uuid', $v->uuid)
+                ->update( $data_update);
+            }
+
         } else {
             $adaData = "TIDAK ADA";
         }
