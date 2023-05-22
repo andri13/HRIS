@@ -24,7 +24,9 @@ class DataAbsenPerijinan extends \Eloquent
         'operator',
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
+        'is_verifikasi',
+        'verifikasi_by',
     ];
     protected $guarded = [''];
 

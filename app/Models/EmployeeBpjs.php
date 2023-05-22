@@ -50,7 +50,8 @@ class EmployeeBpjs extends \Eloquent
         'operator',
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
+        'tmk',
     ];
     protected $guarded = [''];
 
@@ -106,7 +107,9 @@ class EmployeeBpjs extends \Eloquent
         'operator',
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
+        'tmk',
+
     ];
 
     protected $appends = [];

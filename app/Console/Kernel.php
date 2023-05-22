@@ -2,11 +2,11 @@
 
 namespace App\Console;
 
+use App\Services\schedule_absen;
 use App\Console\Commands\AutoDbSeed;
 use App\Console\Commands\VendorCleanUpCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-
 /**
  * Class Kernel
  * @package App\Console
@@ -29,7 +29,15 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+  // =================== Andri ==========================
+        //Rekap Absen
+        // $schedule->call(function(){
+        //     $test = (new  schedule_absen)->RekapAbsen();
+        // })->everyMinute();
 
+        $schedule->call(function(){
+            $test = (new  schedule_absen)->new_employee();
+        })->everyMinute();
     }
 
     /**

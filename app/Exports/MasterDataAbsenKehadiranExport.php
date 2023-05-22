@@ -214,7 +214,11 @@ class MasterDataAbsenKehadiranExport implements FromQuery, WithMapping, ShouldAu
                     break;
             }
         }
-        if(($status_absen == "LN" || $status_absen == "LP" ) && ($absenIN==null) && ($absenOUT==null) ) {
+        if(($status_absen == "LP" ) && ($absenIN==null) && ($absenOUT==null) ) {
+            $kerjalibur = "LIBUR";
+        }
+
+        if($status_absen == "LN" || $status_absen == "CG" || $status_absen == "CM" || $status_absen == "CT" ||$status_absen == "L" ) {
             $kerjalibur = "LIBUR";
         }
 

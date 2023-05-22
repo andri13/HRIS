@@ -2609,11 +2609,10 @@
                     dataType: 'json',
                     success: function(res){
                         if(res.length > 0){
-                            let x= 1;
+                             nomor_urut=0;
                             for(i=0;i<res.length;i++) {
-                                nomor_urut=0;
                                 if (res[i].is_verifikasi==0) {
-                                    nomor_urut = x++;
+                                    nomor_urut=nomor_urut+1;
                                     var uuid = res[i].uuid
                                     var tanggal_lembur = moment(res[i].tanggal_berjalan).format('DD MMM YYYY');
                                     var status_kerja = res[i].status_kerja;
@@ -2704,11 +2703,11 @@
                             $("#subtitle-table1").append("");
                             $("#subtitle-table1").append("Total data yang ditemukan ada: " + nomor_urut);
 
-                            let y= 1;
+                            nomor_urut2= 0;
                             for(i=0;i<res.length;i++) {
-                                nomor_urut2=0;
+                                // nomor_urut2=0;
                                 if (res[i].is_verifikasi==1) {
-                                var nomor_urut2 = y++;
+                                    var nomor_urut2 = nomor_urut2+1;
                                     var uuid = res[i].uuid
                                     var tanggal_lembur = moment(res[i].tanggal_berjalan).format('DD MMM YYYY');
                                     var status_kerja = res[i].status_kerja;

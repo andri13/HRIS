@@ -12,6 +12,7 @@ class RekapPerhitunganPayroll extends \Eloquent
         'periode_bulan_payroll',
         'enroll_id',
         'nik',
+        'kode_grade',
         'employee_name',
         'tanggal_resign',
         'kehadiran_iby',
