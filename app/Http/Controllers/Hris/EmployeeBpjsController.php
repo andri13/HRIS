@@ -441,7 +441,7 @@ class EmployeeBpjsController extends AdminBaseController
     {
         $loggedAdmin = Auth::guard('admin')->user();
         $email = $loggedAdmin->email;
-        
+        dd($request->all());
         $explodePeriodePayroll = explode(" s/d ", $request->periode_payroll);  
         $periodePayroll = substr($explodePeriodePayroll[1], 0, 4) . substr($explodePeriodePayroll[1], 5, 2);
         $explodeKode = explode("-", $request->kode_periode_bpjs);

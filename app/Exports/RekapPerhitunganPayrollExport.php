@@ -317,6 +317,7 @@ class RekapPerhitunganPayrollExport implements FromQuery, WithMapping, ShouldAut
             $nomor_rekening_bank,
             $npwp,
             $kode_grade,
+            $site_nirwana_name
 
         ];
     }
