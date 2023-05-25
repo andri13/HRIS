@@ -54,6 +54,8 @@ class RekapPerhitunganPayrollExport implements FromQuery, WithMapping, ShouldAut
                     periode_bulan_payroll,
                     enroll_id,
                     nik,
+                    kode_grade,
+                    site_nirwana_name,
                     employee_name,
                     tanggal_resign,
                     kehadiran_iby,
@@ -158,6 +160,8 @@ class RekapPerhitunganPayrollExport implements FromQuery, WithMapping, ShouldAut
         $enroll_id = $Data->enroll_id;
         $nik = $Data->nik;
         $employee_name = $Data->employee_name;
+        $kode_grade= $Data->kode_grade;
+        $site_nirwana_name = $Data->site_nirwana_name; 
         if($Data->kehadiran_iby == 0){ $kehadiran_iby = '0';} else { $kehadiran_iby = $Data->kehadiran_iby; }
         if($Data->kehadiran_itb == 0){ $kehadiran_itb = '0';} else { $kehadiran_itb = $Data->kehadiran_itb; }
         if($Data->kehadiran_m == 0){ $kehadiran_m = '0';} else { $kehadiran_m = $Data->kehadiran_m; }
@@ -229,7 +233,7 @@ class RekapPerhitunganPayrollExport implements FromQuery, WithMapping, ShouldAut
         $kategori_karyawan = $Data->kategori_karyawan;
         $aktif_karyawan = $Data->aktif_karyawan;
         $jenis_kelamin = $Data->jenis_kelamin;
-        if($Data->nama_bank == 0){ $nama_bank = '-';} else { $nama_bank = $Data->nama_bank; }
+        if($Data->nama_bank==null){ $nama_bank = '-';} else { $nama_bank = $Data->nama_bank; }
         if($Data->nomor_rekening_bank == 0){ $nomor_rekening_bank = '-';} else { $nomor_rekening_bank = $Data->nomor_rekening_bank; }
         if($Data->npwp == 0){ $npwp = '-';} else { $npwp = $Data->npwp; }
 
@@ -305,12 +309,15 @@ class RekapPerhitunganPayrollExport implements FromQuery, WithMapping, ShouldAut
             $jabatan_karyawan,
             $nama_bagian,
             $nama_department,
+            $site_nirwana_name,
             $kategori_karyawan,
             $aktif_karyawan,
             $jenis_kelamin,
             $nama_bank,
             $nomor_rekening_bank,
-            $npwp            
+            $npwp,
+            $kode_grade,
+
         ];
     }
 
@@ -474,18 +481,25 @@ class RekapPerhitunganPayrollExport implements FromQuery, WithMapping, ShouldAut
                 $sheet->setCellValue('BR5', 'BAGIAN');
                 $sheet->mergeCells('BS5:BS6');
                 $sheet->setCellValue('BS5', 'DEPARTMENT');
+
                 $sheet->mergeCells('BT5:BT6');
-                $sheet->setCellValue('BT5', 'KATEGORI');
+                $sheet->setCellValue('BT5', 'SITE NAME');
+
                 $sheet->mergeCells('BU5:BU6');
-                $sheet->setCellValue('BU5', 'AKTIF');
+                $sheet->setCellValue('BU5', 'KATEGORI');
                 $sheet->mergeCells('BV5:BV6');
-                $sheet->setCellValue('BV5', 'JENIS KELAMIN');
+                $sheet->setCellValue('BV5', 'AKTIF');
                 $sheet->mergeCells('BW5:BW6');
-                $sheet->setCellValue('BW5', 'METODE GAJI');
+                $sheet->setCellValue('BW5', 'JENIS KELAMIN');
                 $sheet->mergeCells('BX5:BX6');
-                $sheet->setCellValue('BX5', 'NOMOR REK. BANK');
+                $sheet->setCellValue('BX5', 'METODE GAJI');
                 $sheet->mergeCells('BY5:BY6');
-                $sheet->setCellValue('BY5', 'NPWP');
+                $sheet->setCellValue('BY5', 'NOMOR REK. BANK');
+                $sheet->mergeCells('BZ5:BZ6');
+                $sheet->setCellValue('BZ5', 'NPWP');
+                $sheet->mergeCells('CA5:CA6');
+                $sheet->setCellValue('CA5', 'KODE GRADE');
+
             },
         ];
     }

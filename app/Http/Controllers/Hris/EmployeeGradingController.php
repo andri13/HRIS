@@ -102,58 +102,63 @@ class EmployeeGradingController extends AdminBaseController
         $operator = $loggedAdmin->email;
 
         $periode_umk = $request->periode_umk;
+        $count_grading=GradingSalary::where('periode_umk',$periode_umk)->count();
+        $query='Tidak ada';
+        // NOT employee_atribut.tanggal_resign < DATE_ADD( LAST_DAY( DATE_SUB( NOW(), INTERVAL 2 MONTH )), INTERVAL 26 DAY ))
 
-        EmployeeGrading::whereRaw('periode_umk = "' . $periode_umk . '"')->delete();
+        if($count_grading){
+            EmployeeGrading::whereRaw('periode_umk = "' . $periode_umk . '"')->delete();
 
-        $queryEmpGrading =  EmployeeAtribut::selectRaw('
-                            employee_atribut.employee_id, employee_atribut.enroll_id, employee_atribut.nik,
-                            employee_atribut.employee_name, employee_atribut.status_staff,
-                            employee_atribut.status_aktif, employee_atribut.join_date,
-                            employee_atribut.tanggal_resign, employee_atribut.kode_grade,
-                            grading_salary.periode_umk, grading_salary.salary_bulanan
-                        ')
-                        ->whereRaw('
-                            employee_atribut.enroll_id is not null
-                            AND (employee_atribut.tanggal_resign is null OR employee_atribut.tanggal_resign = "0000-00-00" OR
-                                NOT employee_atribut.tanggal_resign < DATE_ADD( LAST_DAY( DATE_SUB( NOW(), INTERVAL 2 MONTH )), INTERVAL 26 DAY ))
-                            AND grading_salary.periode_umk = "' . $periode_umk . '"')
-                        ->join('grading_salary','grading_salary.kode_grade','=','employee_atribut.kode_grade')
-                        ->orderBy('employee_atribut.employee_name','asc')
-                        ->get();
+            $queryEmpGrading =  EmployeeAtribut::selectRaw('
+                                employee_atribut.employee_id, employee_atribut.enroll_id, employee_atribut.nik,
+                                employee_atribut.employee_name, employee_atribut.status_staff,
+                                employee_atribut.status_aktif, employee_atribut.join_date,
+                                employee_atribut.tanggal_resign, employee_atribut.kode_grade,
+                                grading_salary.periode_umk, grading_salary.salary_bulanan
+                            ')
+                            ->whereRaw('
+                                employee_atribut.enroll_id is not null
+                                AND (employee_atribut.tanggal_resign is null OR employee_atribut.tanggal_resign = "0000-00-00" OR
+                                    NOT employee_atribut.tanggal_resign < "2023-03-26")
+                                AND grading_salary.periode_umk = "' . $periode_umk . '"')
+                            ->join('grading_salary','grading_salary.kode_grade','=','employee_atribut.kode_grade')
+                            ->orderBy('employee_atribut.employee_name','asc')
+                            ->get();
 
-        foreach ($queryEmpGrading as $key => $value) {
+            foreach ($queryEmpGrading as $key => $value) {
 
-            $countEmp = EmployeeGrading::whereRaw('enroll_id = "' . $value['enroll_id'] . '" AND periode_umk = "' . $value['periode_umk'] . '"')->count();
+                $countEmp = EmployeeGrading::whereRaw('enroll_id = "' . $value['enroll_id'] . '" AND periode_umk = "' . $value['periode_umk'] . '"')->count();
 
-            if ($countEmp > 0) {
-                $query = EmployeeGrading::whereRaw('enroll_id = "' . $value['enroll_id'] . '" AND periode_umk = "' . $value['periode_umk'] . '"')
-                ->update([
-                    'employee_id' => $value['employee_id'],
-                    'enroll_id' => $value['enroll_id'],
-                    'periode_umk' => $value['periode_umk'],
-                    'nik' => $value['nik'],
-                    'employee_name' => $value['employee_name'],
-                    'status_staff' => $value['status_staff'],
-                    'kode_grade' => $value['kode_grade'],
-                    'salary_bulanan' => $value['salary_bulanan'],
-                    'operator' => $operator
-                ]);
-            } else {
-                $query = EmployeeGrading::create([
-                    'employee_id' => $value['employee_id'],
-                    'enroll_id' => $value['enroll_id'],
-                    'periode_umk' => $value['periode_umk'],
-                    'nik' => $value['nik'],
-                    'employee_name' => $value['employee_name'],
-                    'status_staff' => $value['status_staff'],
-                    'kode_grade' => $value['kode_grade'],
-                    'salary_bulanan' => $value['salary_bulanan'],
-                    'operator' => $operator
-                ]);
+                if ($countEmp > 0) {
+                    $query = EmployeeGrading::whereRaw('enroll_id = "' . $value['enroll_id'] . '" AND periode_umk = "' . $value['periode_umk'] . '"')
+                    ->update([
+                        'employee_id' => $value['employee_id'],
+                        'enroll_id' => $value['enroll_id'],
+                        'periode_umk' => $value['periode_umk'],
+                        'nik' => $value['nik'],
+                        'employee_name' => $value['employee_name'],
+                        'status_staff' => $value['status_staff'],
+                        'kode_grade' => $value['kode_grade'],
+                        'salary_bulanan' => $value['salary_bulanan'],
+                        'operator' => $operator
+                    ]);
+                } else {
+                    $query = EmployeeGrading::create([
+                        'employee_id' => $value['employee_id'],
+                        'enroll_id' => $value['enroll_id'],
+                        'periode_umk' => $value['periode_umk'],
+                        'nik' => $value['nik'],
+                        'employee_name' => $value['employee_name'],
+                        'status_staff' => $value['status_staff'],
+                        'kode_grade' => $value['kode_grade'],
+                        'salary_bulanan' => $value['salary_bulanan'],
+                        'operator' => $operator
+                    ]);
+                }
+
             }
 
         }
-
         return Response()->json($query);
     }
 

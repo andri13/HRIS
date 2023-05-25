@@ -136,12 +136,20 @@ class RefHariLiburController extends AdminBaseController
             'mulai_jam_kerja'=>null,
             'akhir_jam_kerja'=>null,
         ];
+        $update_LP=[
+            'status_absen'=>null,
+        ];
         if($status_absen=='LP'){
             MasterDataAbsenKehadiran::where('tanggal_berjalan',$tanggal_libur)
             ->whereNotIn('status_absen',['DL','KM','R'])
             ->where('absen_masuk_kerja',null)
             ->where('absen_pulang_kerja',null)
             ->update($update_libur);
+
+            MasterDataAbsenKehadiran::where('tanggal_berjalan',$tanggal_libur)
+            ->where('absen_masuk_kerja','!=',null)
+            ->where('absen_pulang_kerja','!=',null)
+            ->update($update_LP);
         }
         elseif ($status_absen=='LN'){
             MasterDataAbsenKehadiran::where('tanggal_berjalan',$tanggal_libur)
@@ -154,6 +162,12 @@ class RefHariLiburController extends AdminBaseController
             ->update($update_libur);
 
             MasterDataAbsenKehadiran::where('tanggal_berjalan',$tanggal_libur)->update($jadwal_kerjaLN);
+        }
+
+        elseif ($status_absen=='L'){
+            MasterDataAbsenKehadiran::where('tanggal_berjalan',$tanggal_libur)
+            ->where('status_absen','M')
+            ->update($update_libur);
         }
 
         if($findDT > 0) {

@@ -545,6 +545,7 @@ class EmployeeAtrController extends AdminBaseController
 
         $query = EmployeeAtribut::whereRaw('enroll_id = "' . $enroll_id . '"')->count();
 
+        //update master
         if($query > 0) {
             $query = EmployeeAtribut::whereRaw('enroll_id = "' . $enroll_id . '"')
             ->update([
@@ -618,8 +619,9 @@ class EmployeeAtrController extends AdminBaseController
                 'tanggal_akhir_kontrak' => $tanggal_akhir_kontrak,
                 'catatan_kontrak' => $catatan_kontrak
             ]);
-
+            // update absen
             if($query) {
+                // jika tanggal resign kosong
                 if($request->tanggal_resign == "") { 
 
                     $query1 =  MasterDataAbsenKehadiran::selectRaw('
@@ -655,7 +657,7 @@ class EmployeeAtrController extends AdminBaseController
                             ]);
                         }
                     }
-                    
+                    // tanggal resign tidak kosong   
                 } else { 
 
                     $query1 =  MasterDataAbsenKehadiran::selectRaw('
@@ -692,6 +694,13 @@ class EmployeeAtrController extends AdminBaseController
                         }
                     }
 
+                    // ->whereRaw('
+                    //     employee_atribut.enroll_id = "' . $enroll_id . '"
+                    //     AND employee_atribut.tanggal_resign <= master_data_absen_kehadiran.tanggal_berjalan
+                    //     AND master_data_absen_kehadiran.status_absen = "M"
+                    //     AND master_data_absen_kehadiran.kode_hari not in (5,6)
+                    //     AND master_data_absen_kehadiran.holiday_name is null                       
+                    // ')
                     $query2 =  MasterDataAbsenKehadiran::selectRaw('
                         master_data_absen_kehadiran.tanggal_berjalan,
                         employee_atribut.enroll_id,
@@ -702,7 +711,6 @@ class EmployeeAtrController extends AdminBaseController
                     ->whereRaw('
                         employee_atribut.enroll_id = "' . $enroll_id . '"
                         AND employee_atribut.tanggal_resign <= master_data_absen_kehadiran.tanggal_berjalan
-                        AND master_data_absen_kehadiran.status_absen = "M"
                         AND master_data_absen_kehadiran.kode_hari not in (5,6)
                         AND master_data_absen_kehadiran.holiday_name is null                       
                     ')

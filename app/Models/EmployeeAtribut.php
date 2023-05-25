@@ -191,4 +191,8 @@ class EmployeeAtribut extends \Eloquent
     // public $primaryKey = null;
     public $primaryKey = ['employee_id','enroll_id'];
 
+    public function dept(){
+        return $this->belongsTo('App\Models\DepartmentAll', 'sub_dept_id','sub_dept_id');
+    }
+
 }
