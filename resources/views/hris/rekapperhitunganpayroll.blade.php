@@ -216,7 +216,11 @@
 
                             $.ajax({
                                 data: $('#form_proses_payroll').serialize(),
+<<<<<<< HEAD
                                 url: '{{ route("hris.proses.payroll.rekap") }}',           
+=======
+                                url: '{{ route("hris.coba") }}',           
+>>>>>>> 32a6ad281a5eba42037ee61c900ff57694d6fd43
                                 type: "post",
                                 dataType: 'json',           
                                 success: function (data) {
