@@ -13,6 +13,9 @@ Route::prefix('dataabsenperijinan')->group(function() {
     Route::get('data-perijinan-verifikasi','DataAbsenPerijinanController@perijinan_verifikasi')->name("hris.dataabsenperijinan.verifikasi");
     Route::post('data-perijinan-get','DataAbsenPerijinanController@perijinan_verifikasi_get')->name("hris.dataabsenperijinan.get");
     Route::post('perijinan-verifikasi','DataAbsenPerijinanController@perijinan_verifikasi_store')->name("hris.verifikasiperijinan.store");
+
+    Route::post('perijinan-export','DataAbsenPerijinanController@perijinan_export')->name("hris.exportperijinan.store");
+
 }); 
 
 Route::prefix('koreksiupah')->group(function() {
@@ -33,5 +36,12 @@ Route::prefix('mdabsenhadir')->group(function() {
 }); 
 
 
+
+Route::prefix('payroll')->group(function() {
+    Route::post('proses-rekap', 'ProsesPayrollController@index')->name("hris.proses.payroll.rekap");
+    Route::get('test2', 'ProsesPayrollController@index1')->name("hris.coba2");
+
+
+});
 
 ?>

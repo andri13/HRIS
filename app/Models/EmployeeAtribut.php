@@ -191,4 +191,32 @@ class EmployeeAtribut extends \Eloquent
     // public $primaryKey = null;
     public $primaryKey = ['employee_id','enroll_id'];
 
+    public function dept(){
+        return $this->belongsTo('App\Models\DepartmentAll', 'sub_dept_id','sub_dept_id');
+    }
+
+    public function RekapPerhitunganKehadiranKaryawan(){
+        return $this->hasMany('App\Models\RekapPerhitunganKehadiranKaryawan', 'enroll_id','enroll_id');
+    }
+    public function RekapPerhitunganLembur(){
+        return $this->hasMany('App\Models\RekapPerhitunganLembur', 'enroll_id','enroll_id');
+    }
+    public function RekapPerhitunganIKS(){
+        return $this->hasMany('App\Models\RekapPerhitunganIKS', 'enroll_id','enroll_id');
+    }
+    public function RekapPerhitunganDTPC(){
+        return $this->hasMany('App\Models\RekapPerhitunganDTPC', 'enroll_id','enroll_id');
+    }
+    public function EmployeeBpjs(){
+        return $this->hasMany('App\Models\EmployeeBpjs', 'enroll_id','enroll_id');
+    }
+    public function DataKoreksiUpah(){
+        return $this->hasMany('App\Models\DataKoreksiUpah', 'enroll_id','enroll_id');
+    }
+    public function DataKoreksiPotongan(){
+        return $this->hasMany('App\Models\DataKoreksiPotongan', 'enroll_id','enroll_id');
+    }
+    public function TunjanganKaryawan(){
+        return $this->hasMany('App\Models\TunjanganKaryawan', 'enroll_id','enroll_id');
+    }
 }

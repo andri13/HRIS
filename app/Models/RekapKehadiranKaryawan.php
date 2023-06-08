@@ -98,5 +98,5 @@ class RekapKehadiranKaryawan extends \Eloquent
     // public $primaryKey = null;
     public $primaryKey = ['kode_rekap_kehadiran'];
 
-
+   
 }

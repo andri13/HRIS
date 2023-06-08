@@ -392,7 +392,7 @@
                                         <tr>
                                             <th>Nomor Absen</th>
                                             <th>Tanggal Masuk</th>
-                                            <th>NIK</th>
+                                            <th>NIP</th>
                                         </tr>
                                         <tr>
                                             <td>
@@ -410,13 +410,13 @@
                                                         <div class="input-group-text">
                                                             <i class="fa fa-calendar tx-16 lh-0 op-6"></i>
                                                         </div>
-                                                    </div><input readonly id="join_date" class="form-control fc-datepicker"  placeholder="DD-MM-YYYY" type="text">
+                                                    </div><input id="join_date" class="form-control fc-datepicker"  placeholder="DD-MM-YYYY" type="text">
                                                 </div>
                                             </td>
                                             <td>
                                                 <div class="input-group">
                                                     <input id="is_periksanik" type="hidden">
-                                                    <input id="nik" type="text" class="form-control" placeholder="NIK" maxlength="9" size="9">
+                                                    <input id="nik" type="text" class="form-control" placeholder="NIP" maxlength="9" size="9">
                                                     <span class="input-group-append">
                                                         <button id="btn-periksa_nik" class="btn btn-primary pl-2 pr-2 pt-1 pb-1" type="button"><span><i class="fa fa-search"></i></span> Cek</button>
                                                     </span>

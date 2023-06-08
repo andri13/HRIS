@@ -214,6 +214,15 @@ class DataAbsenPerijinanController extends AdminBaseController
             $nomor = $getlastnomorform->nomor_form_perizinan;
         }
 
+        if ($kode_absen_ijin=='LP') {
+            $is_verifikasi=1;
+            $verifikasi_by='system';
+        }
+        else{
+            $is_verifikasi=0;
+            $verifikasi_by=null;
+        }
+
         $nomorform = str_pad(substr($nomor, -4) + 1,4,"0",STR_PAD_LEFT);
         $nomor_form_perizinan =  $nomor_form_perizinan . $nomorform;
         info('Nomor Form Perizinan : ' . $nomor_form_perizinan);
@@ -230,6 +239,8 @@ class DataAbsenPerijinanController extends AdminBaseController
             'absen_alasan' => $absen_alasan,
             'tanggal_mulai_ijin' => $tanggal_mulai_ijin,
             'tanggal_akhir_ijin' => $tanggal_akhir_ijin,
+            'is_verifikasi'=>$is_verifikasi,
+            'verifikasi_by'=>$verifikasi_by,
             'operator' => $email
         ]);
 
@@ -421,6 +432,15 @@ class DataAbsenPerijinanController extends AdminBaseController
             $nomor = $getlastnomorform->nomor_form_perizinan;
         }
 
+        if ($kode_absen_ijin=='LP') {
+            $is_verifikasi=1;
+            $verifikasi_by='system';
+        }
+        else{
+            $is_verifikasi=0;
+            $verifikasi_by=null;
+        }
+
         $nomorform = str_pad(substr($nomor, -4) + 1,4,"0",STR_PAD_LEFT);
         $nomor_form_perizinan =  $nomor_form_perizinan . $nomorform;
         info('Nomor Form Perizinan : ' . $nomor_form_perizinan);
@@ -437,6 +457,8 @@ class DataAbsenPerijinanController extends AdminBaseController
             'absen_alasan' => $absen_alasan,
             'tanggal_mulai_ijin' => $tanggal_mulai_ijin,
             'tanggal_akhir_ijin' => $tanggal_akhir_ijin,
+            'is_verifikasi'=>$is_verifikasi,
+            'verifikasi_by'=>$verifikasi_by,
             'operator' => $email
         ]);
 
@@ -773,6 +795,63 @@ class DataAbsenPerijinanController extends AdminBaseController
         }
         $a=true;
         return $a;
+    }
+
+    public function perijinan_export(Request $request)
+    {
+
+
+        $data=Excel::toArray([],$request->file('file_import'));
+                foreach ($data[0] as $key => $row) {
+                    if($key>0){
+                        $tanggal_perizinan =$row[0];
+                        $tanggal_perizinan = ($tanggal_perizinan - 25569) * 86400;
+                        $tanggal_perizinan = 25569 + ($tanggal_perizinan / 86400);
+                        $tanggal_perizinan = ($tanggal_perizinan - 25569) * 86400;
+                        $tanggal_perizinan_a=date('Y-m-d', $tanggal_perizinan);
+                    
+                        $tanggal_akhir_ijin =$row[8];
+                        $tanggal_akhir_ijin = ($tanggal_akhir_ijin - 25569) * 86400;
+                        $tanggal_akhir_ijin = 25569 + ($tanggal_akhir_ijin / 86400);
+                        $tanggal_akhir_ijin = ($tanggal_akhir_ijin - 25569) * 86400;
+                        $tanggal_akhir_ijin_b=date('Y-m-d', $tanggal_akhir_ijin);
+
+                        // tabel perijinan
+                        $perijinan=[
+                            'uuid' => Str::uuid(),
+                            // 'uuid_master' => $uuid_master,
+                            'tanggal_perizinan' => $tanggal_perizinan_a,
+                            'nomor_form_perizinan' => $row[1],
+                            'enroll_id' => $row[2],
+                            'nik' => $row[3],
+                            'employee_name' => $row[4],
+                            'kode_absen_ijin' => $row[5],
+                            'absen_alasan' => $row[6],
+                            'tanggal_mulai_ijin' => $tanggal_perizinan_a,
+                            'tanggal_akhir_ijin' => $tanggal_akhir_ijin_b,
+                            'operator' => 'system_injek_lebaran',
+                            'is_verifikasi'=>1,
+                            'verifikasi_by'=>'system',
+                        ];
+                        $query = DataAbsenPerijinan::create($perijinan);
+
+                        $update_empoly=[
+                            'nomor_absen_ijin' => $row[1],
+                            'status_absen' => $row[5],
+                            'absen_alasan' => $row[6],
+                            'tanggal_mulai_ijin' => $tanggal_perizinan_a,
+                            'tanggal_akhir_ijin' => $tanggal_akhir_ijin_b,
+                            'operator' => 'system_injek_lebaran',
+                            'updated_absen_ijin' => now()
+                        ];
+                        MasterDataAbsenKehadiran::whereRaw('
+                        tanggal_berjalan between "' . $tanggal_perizinan_a . '" and "' . $tanggal_akhir_ijin_b . '"
+                        and enroll_id = "' . $row[2] . '"
+                        ')->update($update_empoly);
+                    }
+                            
+                }
+            return true;
     }
     
 }

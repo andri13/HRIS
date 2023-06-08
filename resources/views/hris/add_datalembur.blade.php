@@ -395,11 +395,23 @@
 
             var jmljamlembur = diff_hours(dt1, dt2);
             var jamistirahatlembur = 0;
-
-            if(jmljamlembur >= 1.5) {
-                jamistirahatlembur = 0.5;
-                jmljamlembur = jmljamlembur-jamistirahatlembur;
+            var jmljamke1=0
+            if ( (dt1.getHours() <= 18 && ( (dt2.getHours() == 18 && dt2.getMinutes() >= 30) || (dt2.getHours() > 18) )) ||(dt1Split[0] != dt2Split[0]) ) {
+                jamistirahatlembur += 0.5;
+                var dt_istirahat = new Date(defaultDate(dt1Split[0]) + " " + "18:30");
+                var jmljamke1 = diff_hours(dt1, dt_istirahat);
             }
+            console.log(jmljamke1)
+            if((jmljamlembur-jmljamke1) >= 4) {
+                jamistirahatlembur += 0.5;
+            }
+            if((jmljamlembur-(jmljamke1+0.5)) >= 8) {
+                jamistirahatlembur += 0.5;
+            }
+            if((jmljamlembur-(jmljamke1+1)) >= 12) {
+                jamistirahatlembur += 0.5;
+            }
+            jmljamlembur = jmljamlembur-jamistirahatlembur;
 
             $('#mulai_jam_lembur').val(mulai_jam_lembur);
             var mulaitgllembur = mulai_jam_lembur.split(" ");

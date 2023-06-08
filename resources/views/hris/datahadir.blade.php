@@ -1648,8 +1648,8 @@
                 
                 if (tmp == ''||tmp==null) {
                     swal({
-                        title: "Harap Ceklis",
-                        text: "Ceklis Data Yang Akan diVerifikasi",
+                        title: "Harap Pilih Karyawan",
+                        text: "Data karyawan tidak boleh kosong",
                         icon: "warning",
                         button : false,
                     });

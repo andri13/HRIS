@@ -33,6 +33,50 @@
         </ol>
         <div class="ml-auto">
             <div class="input-group">
+
+            <div class="text-white">
+                    <!-- <a href="{{route('hris.employeeatr.format')}}" id="btn-examimport" class="btn btn-icon btn-orange text-white p-0 mr-1" data-toggle="tooltip" title="" data-original-title="Format File Excel"><i class="fa fa-file-excel-o"></i>Format File </a> -->
+                    <!-- <button type="button" id="btn-import" class="btn btn-icon btn-warning text-white p-0 mr-1"  data-target="#import_grade" data-toggle="modal" title="" data-original-title="Import Data Dari File Excel"><i class="fa fa-file-excel-o"></i> Import Data</button> -->
+                </div>
+                    <!-- modal -->
+             
+                    <form name="custForm" action="{{route ('hris.exportperijinan.store')}}" method="post" enctype="multipart/form-data">
+                        @csrf
+                        <div class="modal fade" id="import_grade" role="dialog" data-backdrop="static" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="modal-content">
+                                            <div class="modal-header bg-primary p-2">
+                                                <h4 class="modal-title pl-2 font-weight-bold" >Import Grading & BPJS</h4>
+                                                <button type="button" id="btn-close" class="close text-white ml-1" data-dismiss="modal" aria-label="Close" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Tutup Dialog">
+                                                    <i class="fa fa-remove"></i>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <label class="form-label">file import : </label>
+                                                            <input class="form-control" name="file_import" type="file" accept=".xlsx, .xls, .csv" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer bg-primary p-1">
+                                                <div class="btn-list">
+                                                    <button type="submit" id="export_grade_bpjs" class="btn btn-secondary btn-app">Simpan</button>
+                                                    <!-- <button type="button" id="" class="btn btn-warning btn-app" data-dismiss="modal">Tutup</button> -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- end modal -->
+
                 <a class="btn btn-primary mr-1 mt-0 mb-1 text-white btn-icon" id="daterange-btn1" data-toggle="tooltip"
                 title="" data-placement="bottom" data-original-title="Klik di sini untuk pilih tanggal perizinan">
                 </a>

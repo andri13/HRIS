@@ -320,7 +320,10 @@ class MdAbsenHadirController extends AdminBaseController
                     if($liburnasional <> "") {
                         $kerjalibur = "LIBUR";
                     }
-                    if(($status_absen == "LN" || $status_absen == "LP" ) &&($absen_pulang_kerja==null) && ($absen_masuk_kerja==null) ) {
+                    if(($status_absen == "LP" ) &&($absen_pulang_kerja==null) && ($absen_masuk_kerja==null) ) {
+                        $kerjalibur = "LIBUR";
+                    }
+                    if($status_absen == "LN" || $status_absen == "CG" || $status_absen == "CM" || $status_absen == "CT" ||$status_absen == "L" ) {
                         $kerjalibur = "LIBUR";
                     }
                     $nestedData['uuid'] = $q->uuid;
@@ -658,8 +661,8 @@ class MdAbsenHadirController extends AdminBaseController
 
                 //Andri
                 foreach($kehadiran as $val) {
-                    if($val["operator"]=='system') {
-                        if($val["status_absen"] == "TL" || $val["status_absen"] == "M" || $val["status_absen"] == "IKS" || $val["status_absen"] == "" || !$val["status_absen"]|| $val["status_absen"] == "LN" || $val["status_absen"] == "LP") {
+                    if($val["operator"]=='system' || $val["operator"]=='system_injek_lebaran') {
+                        if($val["status_absen"] == "TL" || $val["status_absen"] == "M" || $val["status_absen"] == "IKS" || $val["status_absen"] == "" || !$val["status_absen"]|| $val["status_absen"] == "LN" || $val["status_absen"] == "LP" || $val["status_absen"] == "CT" || $val["status_absen"] == "L") {
                             if($val["status_absen"] == "LN"){
                                 $status_absen='LN';
                             }
@@ -1315,8 +1318,8 @@ class MdAbsenHadirController extends AdminBaseController
             }
 
             foreach ($kehadiran as $key4 => $value4) {
-                if(($value4->nomor_form_lembur==null) &&(($value4->operator=='system') || ($value4->operator=='system_lintashari'))) {
-                    if($value4->status_absen == "TL" || $value4->status_absen == "M" || $value4->status_absen == "IKS" || $value4->status_absen == "" || !$value4->status_absen|| $value4->status_absen == "LN" || $value4->status_absen == "LP") {
+                if(($value4->nomor_form_lembur==null) &&(($value4->operator=='system') || ($value4->operator=='system_lintashari') || ($value4->operator=='system_injek_lebaran') )) {
+                    if($value4->status_absen == "TL" || $value4->status_absen == "M" || $value4->status_absen == "IKS" || $value4->status_absen == "" || !$value4->status_absen|| $value4->status_absen == "LN" || $value4->status_absen == "LP" || $value4->status_absen == "CT" || $value4->status_absen == "L") {
                         
                         $jadwal_in=$value4->mulai_jam_kerja;
                         $jadwal_out=$value4->akhir_jam_kerja;

@@ -12,6 +12,7 @@ class RekapPerhitunganPayroll extends \Eloquent
         'periode_bulan_payroll',
         'enroll_id',
         'nik',
+        'kode_grade',
         'employee_name',
         'tanggal_resign',
         'kehadiran_iby',
@@ -94,6 +95,9 @@ class RekapPerhitunganPayroll extends \Eloquent
         'created_at',
         'updated_at',
         'deleted_at',
+        'site_nirwana_name',
+        'join_date',
+        'status_kawin',
     ];
     protected $guarded = ['kode_rekap_payroll'];
 
